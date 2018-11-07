@@ -147,7 +147,7 @@ def maglimits(inst, wfs, site, iq, cc, sb, verbose=False):
 
     return magbright, magfaint
 
-def parangle(coord, location, time, verbose=True):
+def parangle(coord, location, time, verbose=False):
     """
     Compute the parallactic angle.
 
@@ -310,11 +310,11 @@ def gspick(xgs,ygs,xfov,yfov,mag,mmin,mmax,r,rmin,rweight):
 
     return iout
 
-def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
-             site='N', fixpa=False, findpa=False, cat='UCAC4', chopping=False,
+def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
+             site='N', pamode='flip', cat='UCAC4', chopping=False,
              imdir='./', overwrite=False, rmin=-1.0, pad=0.0, inst='GMOS', port='side',
-             testpa=False, degstep=-1., parmode=False, utdate=None, time=None, dst=0.,
-             iq='70', cc='50', sb='50', display=True, verbose=True):
+             testpa=False, degstep=-1., utdate=None, time=None, dst=0.,
+             iq='70', cc='50', sb='50', display=False, verbose=False):
 
     """Gemini guide star selection
        Based on gsselect.pro
@@ -326,10 +326,9 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
         dec:        Dec of base position [sexigesimal string]
         pa:         Initial position angle [deg]
         wfs:        Wavefront sensor ['OIWFS', 'PWFS1', 'PWFS2']
-        ifu:        GMOS IFU ['two', 'red', 'blue']
+        ifu:        GMOS IFU ['none', 'two', 'red', 'blue']
         site:       Gemini site ['N','S','mko','cpo']
-        fixpa:      Fix the PA to the input value
-        findpa:     Calculate the best PA for the selected guide star
+        pamode:     PA mode ['fixed', 'flip', 'parallactic', 'find']
         cat:        Guide star catalog ['UCAC4']
         chopping:   Chopping with P1/P2 (changes magnitude limits)
         imdir:      Directory for storing DSS images
@@ -340,14 +339,13 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
         port:       ISS port ['side','up']
         testpa:     Test different PAs (not implemented)
         degstep:    Step in PAs (not implemented)
-        parmode:    Put slit along the parallactic angle
         utdate:     UT date for parallactic angle calculations (YYYY-MM-DD)
         time:       UT time for parallactic angle calculations (HH:MM:SS)
         dst:        Daylight savings time? [0,1]
         iq:         Image quality constraint ['20','70','85','Any']
         cc:         Cloud cover constraint [0.0, -0.3, -1.0, -3.0]
         sb:         Sky brightness constraint ['20','50','80','Any']
-        display:    Display image of field?
+        display:    Display image of field with FoV?
         verbose:    Verbose output?
 
        Returns
@@ -369,8 +367,13 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
     gsmag = 0.0
 
     l_pa = pa
-    l_findpa = findpa
-    l_fixpa = fixpa
+    l_pamode = pamode.lower()
+    try:
+        ii = ['fixed', 'flip', 'parallactic', 'find'].index(l_pamode)
+    except:
+        if verbose:
+            print("PA modes are: 'fixed', 'flip', 'parallactic', 'find'")
+        return gstarg, gsra, gsdec, gsmag, l_pa
 
     # GN and GS site information
     lat = [19.8238, -30.24075]
@@ -399,10 +402,19 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
         if verbose:
             print("Currently supported instruments are: 'GMOS-S', 'GMOS-N', 'F2', 'GNIRS', 'NIFS', 'NIRIF/6', 'NIRIF/14', 'NIRIF/32'")
         return gstarg, gsra, gsdec, gsmag, l_pa
-
     if verbose:
         print('Instrument: ',l_inst)
 
+    # IFU
+    try:
+        iifu = ['none','two', 'red', 'blue'].index(ifu.lower())
+    except:
+        if verbose:
+            print("IFU options: 'none','two', 'red', 'blue'")
+        return gstarg, gsra, gsdec, gsmag, l_pa
+
+
+    # WFS
     l_wfs = wfs.upper()
     try:
         ii = ['OIWFS', 'PWFS1', 'PWFS2'].index(l_wfs)
@@ -422,7 +434,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
     tcoo = SkyCoord(l_ra,l_dec,frame='icrs',unit = (u.hr, u.deg))
 
     # Parallactic angle mode
-    if parmode:
+    if l_pamode == 'parallactic':
         earth_location = EarthLocation(lon=long[isite] * u.deg, lat=lat[isite] * u.deg,
                                         height=elev[isite] * u.meter)
         obs_time = Time(utdate + 'T' + time,format='isot',scale='utc')
@@ -430,10 +442,8 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
         parang = parangle(tcoo,earth_location,obs_time,verbose=verbose)
         if verbose:
             print('Parallactic angle:', parang)
-
+            
         l_pa = parang.value
-        l_findpa = False
-        l_fixpa = False
 
     # Step for PA search (not yet implemented)
     # if degstep == -1.:
@@ -486,12 +496,10 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
         l_pad = pad / 60.
         if ('GMOS' in l_inst):
             # Offsets for GMOS IFU base position
-            try:
-                iifu = ['two', 'red', 'blue'].index(ifu)
+            if iifu > 0:
                 xshift = [[0.5, 0.529, 0.471], [-0.5, -0.471, -0.529]]
                 dx = xshift[isite][iifu]
-            except:
-                iifu = -1
+            else:
                 dx = 0.0
             # Vertices of OIWFS FOV [arcmin]
             x = [0.19 + dx, -3.31 + dx, -3.31 + dx, 0.19 + dx, 0.19 + dx]
@@ -510,7 +518,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
 
         l_rweight = 0.0
 
-        if not l_findpa:
+        if l_pamode != 'find':
             rotpa = rotations.Rotation2D(-(l_pa + rot))
             xpr, ypr = rotpa(np.asarray(x) / 60., np.asarray(y) / 60.)
             xpr += tcoo.ra.degree
@@ -585,10 +593,10 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu=None,
 
     # If OIWFS, perhaps adjust PA
     if (l_wfs == 'OIWFS'):
-        if (iis != -1) and l_findpa:
+        if (iis != -1) and l_pamode=='find':
             # This puts the guide star near the center of the FoV
             l_pa = gspa[iis].degree + dpa
-        elif (not l_fixpa):
+        elif (l_pamode != 'fixed'):
             if iis == -1:
                 l_mag = 999.
             else:
@@ -676,18 +684,18 @@ if __name__ == "__main__":
     pa = 310.
 
     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='gs', pad=5.,
-             inst='GMOS', wfs='OIWFS', fixpa=False, findpa=False, overwrite=False,
-            parmode=True, utdate=utdate, time=uttime, dst=1, display=True, verbose=True)
+             inst='GMOS', ifu='none', wfs='OIWFS', pamode='parallactic', overwrite=False,
+             utdate=utdate, time=uttime, dst=1, display=True, verbose=True)
     print(gstar, gsra, gsdec, gsmag, gspa)
 
     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='gn', pad=5.,
-             inst='GNIRS', wfs='PWFS2', fixpa=False, findpa=False, overwrite=False,
-            parmode=True, utdate=utdate, time=uttime, dst=0, display=True, verbose=True)
+             inst='GNIRS', wfs='PWFS2', overwrite=False,
+            pamode='flip', utdate=utdate, time=uttime, dst=0, display=True, verbose=True)
     print(gstar, gsra, gsdec, gsmag, gspa)
 
     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='gn', pad=5.,
-             inst='NIRIf/6', wfs='PWFS2', fixpa=False, findpa=False, overwrite=False,
-            parmode=True, utdate=utdate, time=uttime, dst=0, display=True, verbose=True)
+             inst='NIRIf/6', wfs='PWFS2', overwrite=False,
+            pamode='flip', utdate=utdate, time=uttime, dst=0, display=True, verbose=True)
     print(gstar, gsra, gsdec, gsmag, gspa)
 
 
