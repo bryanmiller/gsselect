@@ -79,7 +79,8 @@ if __name__ == "__main__":
     l_inst='GMOS'                           # Instrument: 'GMOS', 'F2', 'GNIRS','NIFS','NIRIF/6','NIRIF/14','NIRIF/32'
     l_port='side'                           # ISS port, options: 'side', 'up', use 'side' for GMOS/F2
     l_ifu = 'none'                          # IFU option: 'none', 'two', 'red', 'blue'
-    l_overw = True                          # Overwrite image/catalog table
+    l_overw = False                         # Overwrite image/catalog table, if False, will read existing files
+    l_display = True                        # Display image of field and selected guide star
     l_chop = False                          # Chopping (no longer used, should be False)
     l_pad = 5.                              # Padding applied to WFS FoV (to account for uncertainties in shape) [arcsec]
     l_rmin = -1.                            # Minimum radius for guide star search [arcmin], -1 to use default
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     # Guide star selection
     gstarg, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa=l_pa,imdir='test/', site=l_site, pad=l_pad,
             inst=l_inst, ifu=l_ifu, wfs=gsprobe, chopping=l_chop, cat='UCAC4', pamode=l_pamode,
-            overwrite=l_overw, utdate=l_obsdate, time=l_obsime, dst=l_dst, display=True, verbose=False)
+            overwrite=l_overw, utdate=l_obsdate, time=l_obsime, dst=l_dst, display=l_display, verbose=False)
     print(gstarg, gsra, gsdec, gsmag, gspa)
 
     # form URL command
