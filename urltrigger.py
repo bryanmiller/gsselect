@@ -6,7 +6,7 @@
 # 2018-01-30 created
 
 from __future__ import print_function
-import subprocess
+import requests
 from gsselect import gsselect
 
 if __name__ == "__main__":
@@ -19,7 +19,8 @@ if __name__ == "__main__":
         ready = 'true'
 
     # character string for line break
-    eol = '%0a'
+    # eol = '%0a'
+    eol = '\n'
 
     # Program parameters
     email = 'user@email.com'                # Email associated with OT user key
@@ -94,37 +95,45 @@ if __name__ == "__main__":
         spa = str(gspa).strip()
         sgsmag = str(gsmag).strip() + '/UC/Vega'
 
-    cmd = server + '/too?prog=' + progid + '&password=' + progkey + '&email=' + email + \
-    '&' + 'obsnum=' + obsnum + '&target=' + target + '&ra=' + ra + '&dec=' + dec + '&mags=' + smags + \
-    '&note=' + note + '&posangle=' + spa + '&ready=' + ready
+    url = server + '/too'
+
+    # Program and target parameters
+    cmd = {'prog': progid, 'password': progkey, 'email': email, 'obsnum': obsnum, 'target': target,
+           'ra': ra, 'dec': dec, 'mags': smags, 'note': note, 'posangle': spa, 'ready': ready}
 
     if group.strip() != '':
-        cmd = cmd + '&group=' + group.strip()
+        cmd['group'] = group.strip()
 
-    cmd = cmd + '&gstarget=' + gstarg + '&gsra=' + gsra + '&gsdec=' + gsdec + '&gsmags=' + sgsmag + \
-          '&gsprobe=' + gsprobe
+    # Guide star
+    cmd['gstarget'] = gstarg
+    cmd['gsra'] = gsra
+    cmd['gsdec'] = gsdec
+    cmd['gsmags'] = sgsmag
+    cmd['gsprobe'] = gsprobe
 
     # timing window?
     if l_wDate.strip() != '':
-        cmd = cmd + '&windowDate=' + l_wDate + '&windowTime='+ l_wTime + '&windowDuration=' +\
-              str(l_wDur).strip()
+        cmd['windowDate'] = l_wDate
+        cmd['windowTime'] = l_wTime
+        cmd['windowDuration'] = str(l_wDur).strip()
 
     # elevation/airmass
     if l_eltype.strip() == 'airmass' or l_eltype.strip() == 'hourAngle':
-        cmd = cmd + '&elevationType=' + l_eltype + '&elevationMin=' +\
-        str(l_elmin).strip() + '&elevationMax=' + str(l_elmax).strip()
+        cmd['elevationType'] = l_eltype
+        cmd['elevationMin'] = str(l_elmin).strip()
+        cmd['elevationMax'] = str(l_elmax).strip()
 
-    print(cmd)
-
+    response = requests.post(url, verify=False, params=cmd)
+    # print(response.url)
     try:
-        proc = subprocess.Popen(['/usr/local/bin/wget','-O','-','--no-check-certificate', cmd],\
-                   stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0]
-        newobsid = proc.decode()
+        response.raise_for_status()
+        newobsid = response.text
         if wait:
             print(newobsid + ' created and set On Hold')
         else:
             print(newobsid + ' triggered!')
+    except requests.exceptions.HTTPError as exc:
+        print('Request failed: {}'.format(response.content))
+        raise exc
 
-    except:
-        print('Error with wget.')
 

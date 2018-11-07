@@ -15,9 +15,8 @@ features and should find an appropriate guide star if one is
 available in the UCAC4 catalog. 
 
 ## Installation
-The scripts require a standard pythin distribution that includes 
-numpy, matplotlib, astropy, and aplpy. It also currently requires
-wget and the path to this may need updating.
+The scripts require a standard python distribution that includes 
+numpy, matplotlib, astropy, requests, and [aplpy](http://aplpy.github.io). 
 
 Then install the scripts by downloading and unpacking the zip
 file or use git, e.g.
