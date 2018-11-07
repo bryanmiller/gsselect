@@ -88,7 +88,7 @@ if __name__ == "__main__":
     # Guide star selection
     gstarg, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa=l_pa,imdir='test/', site=l_site, pad=l_pad,
             inst=l_inst, ifu=l_ifu, wfs=gsprobe, chopping=l_chop, cat='UCAC4', pamode=l_pamode,
-            overwrite=l_overw, utdate=l_obsdate, time=l_obsime, dst=l_dst, display=l_display, verbose=False)
+            overwrite=l_overw, utdate=l_obsdate, time=l_obstime, dst=l_dst, display=l_display, verbose=False)
     print(gstarg, gsra, gsdec, gsmag, gspa)
 
     # form URL command
