@@ -1,4 +1,4 @@
-# gsselect
+# GSselect
 This repository provides a python example of using the 
 Gemini Observatory API for triggering template observations
 that are On Hold. Details of the ToO activation process are
@@ -15,7 +15,9 @@ features and should find an appropriate guide star if one is
 available in the UCAC4 catalog. 
 
 ## Installation
-The scripts require numpy, matplotlib, astropy, and aplpy. 
+The scripts require a standard pythin distribution that includes 
+numpy, matplotlib, astropy, and aplpy. It also currently requires
+wget and the path to this may need updating.
 
 Then install the scripts by downloading and unpacking the zip
 file or use git, e.g.
