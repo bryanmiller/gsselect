@@ -61,8 +61,8 @@ if __name__ == "__main__":
     l_elmin=1.0                             # minimum value for hourAngle/airmass
     l_elmax=1.6                             #  maximum value for hourAngle/airmas
 
-    note = 'This is a '+eol+'test note. URL triggered.'  # Text for note, optional
-    group = '2018 Jun'                      # optional, created if does not exist, case-sensitive match
+    note = 'This is a test note. URL triggered.' + eol + 'Add URL to finder chart here.' # Text for note, optional
+    group = 'New LIGO event'                      # optional, created if does not exist, case-sensitive match
 
     # Guidestar parameters
     # If gstarget is missing but other gs* parameters are present, then it defaults to "GS".
