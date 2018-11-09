@@ -84,11 +84,16 @@ if __name__ == "__main__":
     l_chop = False                          # Chopping (no longer used, should be False)
     l_pad = 5.                              # Padding applied to WFS FoV (to account for uncertainties in shape) [arcsec]
     l_rmin = -1.                            # Minimum radius for guide star search [arcmin], -1 to use default
-    
+    # Conditions
+    l_iq = 'Any'                            # Image quality constraint ['20','70','85','Any']
+    l_cc = 'Any'                            # Cloud cover constraint ['50', '70', '80', 'Any']
+    l_sb = 'Any'                            # Sky brightness constraint ['20','50','80','Any']
+
     # Guide star selection
     gstarg, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa=l_pa,imdir='test/', site=l_site, pad=l_pad,
             inst=l_inst, ifu=l_ifu, wfs=gsprobe, chopping=l_chop, cat='UCAC4', pamode=l_pamode,
-            overwrite=l_overw, utdate=l_obsdate, time=l_obstime, dst=l_dst, display=l_display, verbose=False)
+            iq=l_iq, cc=l_cc, sb=l_sb,
+            utdate=l_obsdate, time=l_obstime, dst=l_dst, overwrite=l_overw, display=l_display, verbose=False)
     print(gstarg, gsra, gsdec, gsmag, gspa)
 
     # form URL command

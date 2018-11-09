@@ -343,7 +343,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         time:       UT time for parallactic angle calculations (HH:MM:SS)
         dst:        Daylight savings time? [0,1]
         iq:         Image quality constraint ['20','70','85','Any']
-        cc:         Cloud cover constraint [0.0, -0.3, -1.0, -3.0]
+        cc:         Cloud cover constraint ['50', '70', '80', 'Any']
         sb:         Sky brightness constraint ['20','50','80','Any']
         display:    Display image of field with FoV?
         verbose:    Verbose output?
