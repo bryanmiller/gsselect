@@ -8,6 +8,7 @@
 from __future__ import print_function
 import requests
 from gsselect import gsselect
+from parangle import parangle
 
 if __name__ == "__main__":
 
@@ -55,8 +56,7 @@ if __name__ == "__main__":
     l_obsdate = l_wDate                     # UT date for parallactic angle calculation
     # l_obsime = '05:35:00'                 # UT time for parallactic angle calculation, gives parang = 0, el=55
     l_obstime = '03:24:00'                  # UT time for parallactic angle calculation, gives parang = -140, el = 43.2
-    l_dst = 1                               # 1 if site on daylight time, for parallactic angle calculation
-    l_site = 'S'                            # Site, S or N
+    l_site = 'Gemini South'                # Site, 'Gemini South' or 'Gemini North'
     l_eltype='airmass'                      # Elevation constraint, "none", "hourAngle", or "airmass"
     l_elmin=1.0                             # minimum value for hourAngle/airmass
     l_elmax=1.6                             #  maximum value for hourAngle/airmas
@@ -89,11 +89,17 @@ if __name__ == "__main__":
     l_cc = 'Any'                            # Cloud cover constraint ['50', '70', '80', 'Any']
     l_sb = 'Any'                            # Sky brightness constraint ['20','50','80','Any']
 
+    # Parallactic angle?
+    if l_pamode == 'parallactic':
+        l_pa = parangle(ra, dec, l_obsdate, l_obstime, l_site).value
+        spa = str(l_pa).strip()
+        l_pamode = 'flip' # in case of guide star selection
+
     # Guide star selection
     gstarg, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa=l_pa,imdir='test/', site=l_site, pad=l_pad,
             inst=l_inst, ifu=l_ifu, wfs=gsprobe, chopping=l_chop, cat='UCAC4', pamode=l_pamode,
             iq=l_iq, cc=l_cc, sb=l_sb,
-            utdate=l_obsdate, time=l_obstime, dst=l_dst, overwrite=l_overw, display=l_display, verbose=False)
+            overwrite=l_overw, display=l_display, verbose=False)
     print(gstarg, gsra, gsdec, gsmag, gspa)
 
     # form URL command
