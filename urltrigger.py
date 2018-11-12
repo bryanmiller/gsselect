@@ -103,49 +103,51 @@ if __name__ == "__main__":
     print(gstarg, gsra, gsdec, gsmag, gspa)
 
     # form URL command
-    if gstarg != '':
+    if gstarg == '':
+        print('No guide stars found. Check PA or adjust conditions.')
+    else:
         spa = str(gspa).strip()
         sgsmag = str(gsmag).strip() + '/UC/Vega'
 
-    url = server + '/too'
+        url = server + '/too'
 
-    # Program and target parameters
-    cmd = {'prog': progid, 'password': progkey, 'email': email, 'obsnum': obsnum, 'target': target,
-           'ra': ra, 'dec': dec, 'mags': smags, 'note': note, 'posangle': spa, 'ready': ready}
+        # Program and target parameters
+        cmd = {'prog': progid, 'password': progkey, 'email': email, 'obsnum': obsnum, 'target': target,
+               'ra': ra, 'dec': dec, 'mags': smags, 'note': note, 'posangle': spa, 'ready': ready}
 
-    if group.strip() != '':
-        cmd['group'] = group.strip()
+        if group.strip() != '':
+            cmd['group'] = group.strip()
 
-    # Guide star
-    cmd['gstarget'] = gstarg
-    cmd['gsra'] = gsra
-    cmd['gsdec'] = gsdec
-    cmd['gsmags'] = sgsmag
-    cmd['gsprobe'] = gsprobe
+        # Guide star
+        cmd['gstarget'] = gstarg
+        cmd['gsra'] = gsra
+        cmd['gsdec'] = gsdec
+        cmd['gsmags'] = sgsmag
+        cmd['gsprobe'] = gsprobe
 
-    # timing window?
-    if l_wDate.strip() != '':
-        cmd['windowDate'] = l_wDate
-        cmd['windowTime'] = l_wTime
-        cmd['windowDuration'] = str(l_wDur).strip()
+        # timing window?
+        if l_wDate.strip() != '':
+            cmd['windowDate'] = l_wDate
+            cmd['windowTime'] = l_wTime
+            cmd['windowDuration'] = str(l_wDur).strip()
 
-    # elevation/airmass
-    if l_eltype.strip() == 'airmass' or l_eltype.strip() == 'hourAngle':
-        cmd['elevationType'] = l_eltype
-        cmd['elevationMin'] = str(l_elmin).strip()
-        cmd['elevationMax'] = str(l_elmax).strip()
+        # elevation/airmass
+        if l_eltype.strip() == 'airmass' or l_eltype.strip() == 'hourAngle':
+            cmd['elevationType'] = l_eltype
+            cmd['elevationMin'] = str(l_elmin).strip()
+            cmd['elevationMax'] = str(l_elmax).strip()
 
-    response = requests.post(url, verify=False, params=cmd)
-    # print(response.url)
-    try:
-        response.raise_for_status()
-        newobsid = response.text
-        if wait:
-            print(newobsid + ' created and set On Hold')
-        else:
-            print(newobsid + ' triggered!')
-    except requests.exceptions.HTTPError as exc:
-        print('Request failed: {}'.format(response.content))
-        raise exc
+        response = requests.post(url, verify=False, params=cmd)
+        # print(response.url)
+        try:
+            response.raise_for_status()
+            newobsid = response.text
+            if wait:
+                print(newobsid + ' created and set On Hold')
+            else:
+                print(newobsid + ' triggered!')
+        except requests.exceptions.HTTPError as exc:
+            print('Request failed: {}'.format(response.content))
+            raise exc
 
 
