@@ -92,11 +92,10 @@ if __name__ == "__main__":
     # Parallactic angle?
     if l_pamode == 'parallactic':
         l_pa = parangle(ra, dec, l_obsdate, l_obstime, l_site).value
-        spa = str(l_pa).strip()
         l_pamode = 'flip' # in case of guide star selection
 
     # Guide star selection
-    gstarg, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa=l_pa,imdir='test/', site=l_site, pad=l_pad,
+    gstarg, gsra, gsdec, gsmag, gspa = gsselect(target, ra, dec, pa=l_pa, imdir='./', site=l_site, pad=l_pad,
             inst=l_inst, ifu=l_ifu, wfs=gsprobe, chopping=l_chop, cat='UCAC4', pamode=l_pamode,
             iq=l_iq, cc=l_cc, sb=l_sb,
             overwrite=l_overw, display=l_display, verbose=False)
