@@ -14,6 +14,12 @@ in the Observing Tool. The script gsselect.py mimics these
 features and should find an appropriate guide star if one is 
 available in the UCAC4 catalog. 
 
+Gsselect also has a 'find' position angle (PA) feature
+that we never implemented in the OT. This will pick the best guide
+star available and set the PA so that it is reachable. This is 
+useful with the GMOS and F2 OIWFS guide probes if the PA
+is unimportant.
+
 ## Installation
 The scripts require a standard python distribution that includes 
 numpy, matplotlib, astropy, requests, and [aplpy](http://aplpy.github.io). 
