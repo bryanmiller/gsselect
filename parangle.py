@@ -8,6 +8,7 @@ import astropy.units as u
 def parangle(ra, dec, utdate, uttime, site, verbose=False):
     """
     Compute the parallactic angle of a position at a given date-time.
+    Based on parangle.pro by Tim Robishaw
     Bryan Miller
 
     Parameters
