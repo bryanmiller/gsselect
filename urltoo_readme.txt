@@ -52,9 +52,11 @@ encoded.
 If the group is specified and it does not exist (using a
 case-sensitive match) then a new group is created.
 
-The guide star ra, dec, and probe must be given (though this will no longer
-be the cases after the release of the 2019A OT). If any gs* parameter
-is specified, then all of gsra, gsdec, and gsprobe must be specified.
+The guide star ra, dec, and probe are optional but recommended since
+there is no guarantee, especially for GMOS, that a guide star will
+be available at the requested position angle. If no guide star is given
+then the OT will attempt to find a guide star. If any gs* parameter
+is specified, then gsra, gsdec, and gsprobe must all be specified.
 Otherwise an HTTP 400 (Bad Request) is returned with the message
 "guide star not completely specified".  If gstarget is missing or ''
 but other gs* parameters are present, then it defaults to "GS".

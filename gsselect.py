@@ -281,8 +281,8 @@ def gspick(xgs,ygs,xfov,yfov,mag,mmin,mmax,r,rmin,rweight):
 def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
              site='N', pamode='flip', cat='UCAC4', chopping=False,
              imdir='./', overwrite=False, rmin=-1.0, pad=0.0, inst='GMOS', port='side',
-             testpa=False, degstep=-1.,
-             iq='70', cc='50', sb='50', display=False, verbose=False):
+             testpa=False, degstep=-1., iq='70', cc='50', sb='50',
+             display=False, figout=False, figfile='default', dpi=75, verbose=False):
 
     """Gemini guide star selection
        Based on gsselect.pro
@@ -299,7 +299,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         pamode:     PA mode ['fixed', 'flip', 'find']
         cat:        Guide star catalog ['UCAC4']
         chopping:   Chopping with P1/P2 (changes magnitude limits)
-        imdir:      Directory for storing DSS images
+        imdir:      Directory for storing DSS images, guide star catalogs, and pngs of the field
         overwrite:  Overwrite DSS and vot files with new versions, otherwise use saved versions
         rmin:       Minimum radius from base [armin], -1 to use default values
         pad:        Padding applied to WFS FoV (to account for uncertainties in shape) [arcsec]
@@ -311,6 +311,9 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         cc:         Cloud cover constraint ['50', '70', '80', 'Any']
         sb:         Sky brightness constraint ['20','50','80','Any']
         display:    Display image of field with FoV?
+        figout:     Output a png of the field?
+        figfile:    Name of output png, if 'default' then use the target name
+        dpi:        DPI for output figure, default=75
         verbose:    Verbose output?
 
        Returns
@@ -345,11 +348,11 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
     # long = [-155.46905, -70.736694]
     # elev = [4213., 2722.]
 
-    if 'north' in site.lower() or "mko" in site.lower():
+    if 'n' in site.lower() or "mko" in site.lower():
         l_site = 'N'
         isite = 0
         # utcoffset = 10.0 * u.hour
-    elif 'south' in site.lower() or "cpo" in site.lower():
+    elif 's' in site.lower() or "cpo" in site.lower():
         l_site = 'S'
         isite = 1
         # utcoffset = -4.0 * u.hour + dst * u.hour
@@ -391,12 +394,12 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         print('WFS: ', l_wfs)
 
     l_target = re.sub(' ','',target)
-    l_ra = ra.strip()
-    l_dec = dec.strip()
+
+    tcoo = SkyCoord(ra.strip(),dec.strip(),frame='icrs',unit = (u.hr, u.deg))
+    l_ra = tcoo.ra.to_string(u.hour,sep=':')
+    l_dec = tcoo.dec.to_string(u.deg,sep=':')
     if '-' not in l_dec and l_dec[0] != '+':
         l_dec = '+' + l_dec
-
-    tcoo = SkyCoord(l_ra,l_dec,frame='icrs',unit = (u.hr, u.deg))
 
     # Step for PA search (not yet implemented)
     # if degstep == -1.:
@@ -474,11 +477,11 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         if l_pamode != 'find':
             rotpa = rotations.Rotation2D(-(l_pa + rot))
             xpr, ypr = rotpa(np.asarray(x) / 60., np.asarray(y) / 60.)
-            xpr += tcoo.ra.degree
+            xpr = xpr/np.cos(tcoo.dec) + tcoo.ra.degree
             # print(xpr)
             ypr += tcoo.dec.degree
             xppr, yppr = rotpa(np.asarray(xpad) / 60., np.asarray(ypad) / 60.)
-            xppr += tcoo.ra.degree
+            xppr = xppr/np.cos(tcoo.dec) + tcoo.ra.degree
             yppr += tcoo.dec.degree
 
     else:
@@ -493,11 +496,11 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         ang = np.array(range(101)) * 2. * np.pi / 100.
 
         #  inner radius
-        xpr = l_rmin.to(u.degree).data * np.cos(ang)  + tcoo.ra.degree
+        xpr = l_rmin.to(u.degree).data * np.cos(ang)/np.cos(tcoo.dec)  + tcoo.ra.degree
         ypr = l_rmin.to(u.degree).data * np.sin(ang)  + tcoo.dec.degree
         # plots, xpr / naxis1, ypr / naxis2, / norm, line = 2
         # outer radius
-        xppr = l_rmax.to(u.degree).data * np.cos(ang)  + tcoo.ra.degree
+        xppr = l_rmax.to(u.degree).data * np.cos(ang)/np.cos(tcoo.dec)  + tcoo.ra.degree
         yppr = l_rmax.to(u.degree).data * np.sin(ang)  + tcoo.dec.degree
 
     # Query catalog
@@ -561,7 +564,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
                 l_pa180 = l_pa + 180.
             rotpa = rotations.Rotation2D(-(l_pa180+rot))
             l_xppr, l_yppr = rotpa(np.asarray(xpad) / 60., np.asarray(ypad) / 60.)
-            l_xppr += tcoo.ra.degree
+            l_xppr = l_xppr/np.cos(tcoo.dec) + tcoo.ra.degree
             l_yppr += tcoo.dec.degree
 
             l_iis = gspick(gscoo.ra.degree,gscoo.dec.degree,l_xppr,l_yppr,mag,mmin,mmax,rsep.degree,
@@ -575,11 +578,11 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         # Final FoVs for plots
         rotpa = rotations.Rotation2D(-(l_pa + rot))
         xpr, ypr = rotpa(np.asarray(x) / 60., np.asarray(y) / 60.)
-        xpr += tcoo.ra.degree
+        xpr = xpr/np.cos(tcoo.dec) + tcoo.ra.degree
         ypr += tcoo.dec.degree
 
         xppr, yppr = rotpa(np.asarray(xpad) / 60., np.asarray(ypad) / 60.)
-        xppr += tcoo.ra.degree
+        xppr = xppr/np.cos(tcoo.dec) + tcoo.ra.degree
         yppr += tcoo.dec.degree
 
     if iis == -1:
@@ -592,7 +595,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         gsmag = mag[iis]
 
     # Plot
-    if display:
+    if display or figout:
         fig = aplpy.FITSFigure(hdu)
         # fig.axis_labels.set_font(family='serif')
         # fig.tick_labels.set_font(family='serif')
@@ -619,7 +622,14 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
                   'PWFS1':{'p':'--', 'pp':'-'}}
         fig.show_polygons([wfspoly_p],edgecolor='red',linestyle=lstyle[l_wfs]['p'])
         fig.show_polygons([wfspoly_pp], edgecolor='red',linestyle=lstyle[l_wfs]['pp'])
-        plt.show()
+        if figout:
+            if figfile.lower() == 'default':
+                l_figfile = imdir + '/' + l_target + '_fov.png'
+            else:
+                l_figfile = imdir + '/' + figfile
+            plt.savefig(l_figfile,dpi=dpi)
+        if display:
+            plt.show()
     hdu.close()
 
     return gstarg, gsra, gsdec, gsmag, l_pa
@@ -636,18 +646,39 @@ if __name__ == "__main__":
     uttime = '03:24:00'   # parang = -140, el = 43.2
     pa = 310.
 
+    # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
+    #          inst='GMOS', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
+    #          display=True, figout=True, dpi=75, verbose=True)
+    # print(gstar, gsra, gsdec, gsmag, gspa)
+    #
+    # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
+    #          inst='GNIRS', wfs='PWFS2', overwrite=False,
+    #         pamode='flip', display=True, verbose=True, figout=True, figfile='gsselect.pdf')
+    # print(gstar, gsra, gsdec, gsmag, gspa)
+    #
+    # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
+    #          inst='NIRIf/6', wfs='PWFS2', overwrite=False,
+    #         pamode='flip', display=True, verbose=True)
+    # print(gstar, gsra, gsdec, gsmag, gspa)
+
+    target = 'NGC4833'      # new target name
+    ra = '12:59:33.919'          # RA (J2000)
+    dec = '-70:52:35.4'           # Dec (J2000)
+    smags = '22.4/r/AB'
+    pa = 300.
+
     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
              inst='GMOS', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
-             display=True, verbose=True)
+             display=True, figout=False, dpi=75, verbose=True)
     print(gstar, gsra, gsdec, gsmag, gspa)
 
-    gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
-             inst='GNIRS', wfs='PWFS2', overwrite=False,
-            pamode='flip', display=True, verbose=True)
+
+    gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
+             inst='F2', ifu='none', wfs='PWFS2', pamode='flip', overwrite=False,
+             display=True, figout=False, dpi=75, verbose=True)
     print(gstar, gsra, gsdec, gsmag, gspa)
 
-    gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
-             inst='NIRIf/6', wfs='PWFS2', overwrite=False,
-            pamode='flip', display=True, verbose=True)
+    gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
+             inst='F2', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
+             display=True, figout=False, dpi=75, verbose=True)
     print(gstar, gsra, gsdec, gsmag, gspa)
-
