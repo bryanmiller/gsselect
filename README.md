@@ -22,7 +22,7 @@ is unimportant.
 
 ## Installation
 The scripts require a standard python distribution that includes 
-numpy, matplotlib, astropy, requests, and [aplpy](http://aplpy.github.io). 
+numpy (at least 1.15.4), matplotlib, astropy, requests, and [aplpy](http://aplpy.github.io). 
 
 Then install the scripts by downloading and unpacking the zip
 file or use git, e.g.
