@@ -17,7 +17,7 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python",
         "Intended Audience :: Science/Research",
-        "License :: AURA copyright",
+        "License :: Other/Proprietary License",
         "Operating System :: OS Independent",
     ],
     install_requires=[
