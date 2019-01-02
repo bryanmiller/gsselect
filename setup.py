@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='gsselect',
-    version='1.0.1',
+    version='1.0.2',
     scripts=['gsselect.py', 'gemcats.py', 'inpoly.py', 'parangle.py', 'urltrigger.py'],
     author="Bryan Miller",
     author_email="millerwbryan@gmail.com",
