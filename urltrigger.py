@@ -7,8 +7,8 @@
 
 from __future__ import print_function
 import requests
-from gsselect import gsselect
-from parangle import parangle
+from gsselect.gsselect import gsselect
+from gsselect.parangle import parangle
 
 if __name__ == "__main__":
 

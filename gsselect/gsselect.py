@@ -17,8 +17,8 @@ import re
 import aplpy
 
 # local scripts
-from inpoly import inpoly
-from gemcats import gemdssfile,gemgstable
+from gsselect.inpoly import inpoly
+from gsselect.gemcats import gemdssfile,gemgstable
 
 def rlimits(inst, wfs, site, verbose=False):
 
