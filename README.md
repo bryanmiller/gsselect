@@ -29,6 +29,10 @@ file or use git, e.g.
 
 git clone https://github.com/bryanmiller/gsselect.git
 
+The gsselect guide star selection routines can also be installed as a pip package with
+
+pip install gsselect
+
 ## Authentication
 Authentication for the trigger requires a 'user key' for the 
 Observing Tool that is associated with an email address that
