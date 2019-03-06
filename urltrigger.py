@@ -4,6 +4,7 @@
 # See urltoo_readme.txt for more information on the API
 # Bryan Miller
 # 2018-01-30 created
+# 2019-02-13 added exptime parameter
 
 from __future__ import print_function
 import requests
@@ -11,6 +12,9 @@ from gsselect.gsselect import gsselect
 from gsselect.parangle import parangle
 
 if __name__ == "__main__":
+
+    # Require a guide star to submit?
+    gsreq = True
 
     # If wait==True, then keep the new observation at On Hold (no trigger)
     wait = True
@@ -49,6 +53,7 @@ if __name__ == "__main__":
     smags = '22.4/r/AB'                     # Target brightness
     l_pa = 180.
     l_pamode = 'parallactic'                # Options: fixed, flip, find, parallactic
+    l_exptime = 0                           # exposure time [seconds], if 0 then the value in the template observation is used
     # l_wDate = ''
     l_wDate='2018-03-15'                    # UTC date YYYY-MM-DD for timing window
     l_wTime='01:00'                         # UTC time HH:MM for timing window
@@ -89,6 +94,11 @@ if __name__ == "__main__":
     l_cc = 'Any'                            # Cloud cover constraint ['50', '70', '80', 'Any']
     l_sb = 'Any'                            # Sky brightness constraint ['20','50','80','Any']
 
+    # Exposure time check
+    if round(l_exptime) > 1200:
+        print('The exposure time must be <= 1200 seconds.')
+        exit(1)
+
     # Parallactic angle?
     if l_pamode == 'parallactic':
         l_pa = parangle(ra, dec, l_obsdate, l_obstime, l_site).value
@@ -102,8 +112,9 @@ if __name__ == "__main__":
     print(gstarg, gsra, gsdec, gsmag, gspa)
 
     # form URL command
-    if gstarg == '':
-        print('No guide stars found. Check PA or adjust conditions.')
+    if gstarg == '' and gsreq:
+        print('No guide star found. Try changing the PA or the conditions.')
+        exit(1)
     else:
         spa = str(gspa).strip()
         sgsmag = str(gsmag).strip() + '/UC/Vega'
@@ -114,15 +125,21 @@ if __name__ == "__main__":
         cmd = {'prog': progid, 'password': progkey, 'email': email, 'obsnum': obsnum, 'target': target,
                'ra': ra, 'dec': dec, 'mags': smags, 'note': note, 'posangle': spa, 'ready': ready}
 
+        # Exposure time?
+        if round(l_exptime) != 0:
+            cmd['exptime'] = round(l_exptime)
+
+        # Group/folder name?
         if group.strip() != '':
             cmd['group'] = group.strip()
 
-        # Guide star
-        cmd['gstarget'] = gstarg
-        cmd['gsra'] = gsra
-        cmd['gsdec'] = gsdec
-        cmd['gsmags'] = sgsmag
-        cmd['gsprobe'] = gsprobe
+        # Guide star?
+        if gstarg != '':
+            cmd['gstarget'] = gstarg
+            cmd['gsra'] = gsra
+            cmd['gsdec'] = gsdec
+            cmd['gsmags'] = sgsmag
+            cmd['gsprobe'] = gsprobe
 
         # timing window?
         if l_wDate.strip() != '':
@@ -130,12 +147,13 @@ if __name__ == "__main__":
             cmd['windowTime'] = l_wTime
             cmd['windowDuration'] = str(l_wDur).strip()
 
-        # elevation/airmass
+        # elevation/airmass?
         if l_eltype.strip() == 'airmass' or l_eltype.strip() == 'hourAngle':
             cmd['elevationType'] = l_eltype
             cmd['elevationMin'] = str(l_elmin).strip()
             cmd['elevationMax'] = str(l_elmax).strip()
 
+        # Submit request
         response = requests.post(url, verify=False, params=cmd)
         # print(response.url)
         try:

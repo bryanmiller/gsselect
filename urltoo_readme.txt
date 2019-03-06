@@ -1,6 +1,6 @@
 Gemini URL-based Submission of ToO Triggers
 Bryan Miller and Shane Walker
-2018nov06
+2019feb13
 
 Gemini has implemented a web-based service for receiving
 target-of-opportunity triggers.  This aleviates the need for PIs to
@@ -18,17 +18,18 @@ password    - password for user key associated with email, site specific
 obsnum      - id of the template observation to clone and update,
               must be 'On hold'
 target      - name of the target
-ra          - target RA (J2000), format 'HH:MM:SS.SS' 
-dec         - target Dec(J2000), format 'DD:MM:SS.SSS' 
+ra          - target RA [J2000], format 'HH:MM:SS.SS'
+dec         - target Dec[J2000], format 'DD:MM:SS.SSS'
 mags        - target magnitude information (optional)
 note        - text to include in a "Finding Chart" note (optional)
-posangle    - position angle, defaults to 0 (optional)
+posangle    - position angle [degrees E of N], defaults to 0 (optional)
+exptime     - exposure time [seconds], if not given then value in template used (optional)
 group       - name of the group for the new observation (optional)
-gstarget    - name of guide star 
-gsra        - guide star RA (J2000) 
-gsdec       - guide star Dec(J2000) 
+gstarget    - name of guide star (optional, but must be set if any gs* parameter given)
+gsra        - guide star RA [J2000] (optional, but must be set if any gs* parameter given)
+gsdec       - guide star Dec[J2000] (optional, but must be set if any gs* parameter given)
 gsmags      - guide star magnitude (optional)
-gsprobe     - PWFS1, PWFS2, OIWFS, or AOWFS
+gsprobe     - PWFS1, PWFS2, OIWFS, or AOWFS (optional, but must be set if any gs* parameter given)
 ready       - if "true" set the status to "Prepared/Ready" (defaults to true) 
 windowDate  - interpreted in UTC in the format 'YYYY-MM-DD'
 windowTime  - interpreted in UTC in the format 'HH:MM'
@@ -45,6 +46,13 @@ text is added to a new note, the identified purpose of which is to
 contain a link to a finding chart.  The "ready" parameter is used to
 determine whether to mark the observation as Prepared (Ready) or not 
 (and thereby generate the TOO trigger).
+
+The exposure time parameter, if given, only sets the exposure time in the
+instrument "static component", which is tied to the first sequence step.
+Any exposure times defined in additional instrument iterators in the
+template observation sequence will not be changed. If the exposure time is not
+given then the value defined in the template observation is used. The
+exposure time must be an integer between 1 and 1200 seconds.
 
 Special characters or line-feeds in the text notes must be URL
 encoded.
