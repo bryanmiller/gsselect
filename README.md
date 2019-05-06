@@ -7,12 +7,13 @@ The document [urltoo_readme.txt](https://github.com/bryanmiller/gsselect/blob/ma
 give more details about the API.
 
 The example triggering script is urltrigger.py but most of the 
-code is for selecting a guide star. As of November 2018 guide 
-stars are still required with the trigger and the API does
+code is for selecting a guide star. The triggering API does
 not support the new automated guide star selection features 
 in the Observing Tool. The script gsselect.py mimics these 
 features and should find an appropriate guide star if one is 
-available in the UCAC4 catalog. 
+available in the UCAC4 catalog. It can also display the guide
+star candidates and the wavefront sensor field of view on a 
+DDS image of the field.
 
 Gsselect also has a 'find' position angle (PA) feature
 that we never implemented in the OT. This will pick the best guide
