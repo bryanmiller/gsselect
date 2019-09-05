@@ -33,12 +33,12 @@ if __name__ == "__main__":
     progid = 'GS-2018B-Q-999'               # Program ID
 
     # Use these URLs for GS
-    server = 'https://139.229.34.15:8443'
+    server = 'https://gsodb.gemini.edu:8443'
     # test server
     # server = 'https://gsodbtest.gemini.edu:8443'
 
     # Use these URLs for GN
-    # server = 'https://128.171.88.221:8443'
+    # server = 'https://gnodb.gemini.edu:8443'
     # test server
     # server = 'https://gnodbtest.hi.gemini.edu:8443'
 

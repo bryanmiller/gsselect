@@ -8,6 +8,7 @@ from __future__ import print_function
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import use as pltuse
 import astropy.units as u
 import astropy.io.fits as pyfits
 from astropy.io.votable import parse_single_table
@@ -596,6 +597,8 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
 
     # Plot
     if display or figout:
+        if not display:
+            pltuse('Agg')
         fig = aplpy.FITSFigure(hdu)
         # fig.axis_labels.set_font(family='serif')
         # fig.tick_labels.set_font(family='serif')
@@ -620,65 +623,67 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         lstyle = {'OIWFS':{'p':'-', 'pp':'--'},
                   'PWFS2':{'p':'--', 'pp':'-'},
                   'PWFS1':{'p':'--', 'pp':'-'}}
-        fig.show_polygons([wfspoly_p],edgecolor='red',linestyle=lstyle[l_wfs]['p'])
+        fig.show_polygons([wfspoly_p], edgecolor='red',linestyle=lstyle[l_wfs]['p'])
         fig.show_polygons([wfspoly_pp], edgecolor='red',linestyle=lstyle[l_wfs]['pp'])
         if figout:
             if figfile.lower() == 'default':
                 l_figfile = imdir + '/' + l_target + '_fov.png'
             else:
                 l_figfile = imdir + '/' + figfile
-            plt.savefig(l_figfile,dpi=dpi)
+            # plt.savefig(l_figfile,dpi=dpi)
+            fig.save(l_figfile,dpi=dpi)
         if display:
             plt.show()
+        fig.close()
     hdu.close()
 
     return gstarg, gsra, gsdec, gsmag, l_pa
 
 
-if __name__ == "__main__":
-
-    target = 'TNO12345 url'      # new target name
-    ra = '12:22:22.860'          # RA (J2000)
-    dec = ' 4:31:03.23'           # Dec (J2000)
-    smags = '22.4/r/AB'
-    utdate = '2018-03-15'
-    # uttime = '05:35:00' # parang = 0, el=55
-    uttime = '03:24:00'   # parang = -140, el = 43.2
-    pa = 310.
-
-    # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
-    #          inst='GMOS', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
-    #          display=True, figout=True, dpi=75, verbose=True)
-    # print(gstar, gsra, gsdec, gsmag, gspa)
-    #
-    # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
-    #          inst='GNIRS', wfs='PWFS2', overwrite=False,
-    #         pamode='flip', display=True, verbose=True, figout=True, figfile='gsselect.pdf')
-    # print(gstar, gsra, gsdec, gsmag, gspa)
-    #
-    # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
-    #          inst='NIRIf/6', wfs='PWFS2', overwrite=False,
-    #         pamode='flip', display=True, verbose=True)
-    # print(gstar, gsra, gsdec, gsmag, gspa)
-
-    target = 'NGC4833'      # new target name
-    ra = '12:59:33.919'          # RA (J2000)
-    dec = '-70:52:35.4'           # Dec (J2000)
-    smags = '22.4/r/AB'
-    pa = 300.
-
-    gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
-             inst='GMOS', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
-             display=True, figout=False, dpi=75, verbose=True)
-    print(gstar, gsra, gsdec, gsmag, gspa)
-
-
-    gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
-             inst='F2', ifu='none', wfs='PWFS2', pamode='flip', overwrite=False,
-             display=True, figout=False, dpi=75, verbose=True)
-    print(gstar, gsra, gsdec, gsmag, gspa)
-
-    gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
-             inst='F2', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
-             display=True, figout=False, dpi=75, verbose=True)
-    print(gstar, gsra, gsdec, gsmag, gspa)
+# if __name__ == "__main__":
+# 
+#     target = 'TNO12345 url'      # new target name
+#     ra = '12:22:22.860'          # RA (J2000)
+#     dec = ' 4:31:03.23'           # Dec (J2000)
+#     smags = '22.4/r/AB'
+#     utdate = '2018-03-15'
+#     # uttime = '05:35:00' # parang = 0, el=55
+#     uttime = '03:24:00'   # parang = -140, el = 43.2
+#     pa = 310.
+# 
+#     # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
+#     #          inst='GMOS', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
+#     #          display=True, figout=True, dpi=75, verbose=True)
+#     # print(gstar, gsra, gsdec, gsmag, gspa)
+#     #
+#     # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
+#     #          inst='GNIRS', wfs='PWFS2', overwrite=False,
+#     #         pamode='flip', display=True, verbose=True, figout=True, figfile='gsselect.pdf')
+#     # print(gstar, gsra, gsdec, gsmag, gspa)
+#     #
+#     # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
+#     #          inst='NIRIf/6', wfs='PWFS2', overwrite=False,
+#     #         pamode='flip', display=True, verbose=True)
+#     # print(gstar, gsra, gsdec, gsmag, gspa)
+# 
+#     target = 'NGC4833'      # new target name
+#     ra = '12:59:33.919'          # RA (J2000)
+#     dec = '-70:52:35.4'           # Dec (J2000)
+#     smags = '22.4/r/AB'
+#     pa = 300.
+# 
+#     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
+#              inst='GMOS', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
+#              display=True, figout=False, dpi=75, verbose=True)
+#     print(gstar, gsra, gsdec, gsmag, gspa)
+# 
+# 
+#     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
+#              inst='F2', ifu='none', wfs='PWFS2', pamode='flip', overwrite=False,
+#              display=True, figout=False, dpi=75, verbose=True)
+#     print(gstar, gsra, gsdec, gsmag, gspa)
+# 
+#     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
+#              inst='F2', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
+#              display=True, figout=False, dpi=75, verbose=True)
+#     print(gstar, gsra, gsdec, gsmag, gspa)
