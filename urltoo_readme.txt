@@ -1,22 +1,30 @@
 Gemini URL-based Submission of ToO Triggers
 Bryan Miller and Shane Walker
-2019feb13
+2019sep12
 
 Gemini has implemented a web-based service for receiving
-target-of-opportunity triggers.  This aleviates the need for PIs to
-fetch and then store their programs to submit a trigger and allows the
+target-of-opportunity (ToO) observation triggers.  This alleviates the need for teams to
+fetch and then store their programs manually to submit a trigger and allows the
 triggering process to be better automated, thus improving the overall
-response time.
+response time. The Gemini ToO process is described at
 
-The details of the trigger are formatted as an URL string which can be
-submitted to Gemini using any browser or URL tool such as wget.  The
-following parameters are available.
+https://www.gemini.edu/node/11005
+
+The team must have have an approved ToO program on Gemini and define ToO template observations,
+complete observations without defined targets, during the Phase 2 process. Authentication
+is done via a "User key" tied to an email address. See the following page for help on getting
+a user key and the password needed for the trigger request.
+
+https://www.gemini.edu/node/12109
+
+The details of the trigger are formatted as a URL string which can be
+submitted to Gemini using any browser or URL tool such as wget or the 'requests'
+package in Python.  The following parameters are available.
 
 prog        - program id
 email       - email address for user key
-password    - password for user key associated with email, site specific
-obsnum      - id of the template observation to clone and update,
-              must be 'On hold'
+password    - password for user key associated with email, site specific, emailed by the ODB
+obsnum      - id of the template observation to clone and update, must be 'On Hold'
 target      - name of the target
 ra          - target RA [J2000], format 'HH:MM:SS.SS'
 dec         - target Dec[J2000], format 'DD:MM:SS.SSS'
@@ -30,7 +38,7 @@ gsra        - guide star RA [J2000] (optional, but must be set if any gs* parame
 gsdec       - guide star Dec[J2000] (optional, but must be set if any gs* parameter given)
 gsmags      - guide star magnitude (optional)
 gsprobe     - PWFS1, PWFS2, OIWFS, or AOWFS (optional, but must be set if any gs* parameter given)
-ready       - if "true" set the status to "Prepared/Ready" (defaults to true) 
+ready       - if "true" set the status to "Prepared/Ready", otherwise remains at "On Hold" (default "true")
 windowDate  - interpreted in UTC in the format 'YYYY-MM-DD'
 windowTime  - interpreted in UTC in the format 'HH:MM'
 windowDuration - integer hours
@@ -44,8 +52,8 @@ information.  That way the template observation can be reused in the
 future.  The target name, ra, and dec are straightforward.  The note
 text is added to a new note, the identified purpose of which is to
 contain a link to a finding chart.  The "ready" parameter is used to
-determine whether to mark the observation as Prepared (Ready) or not 
-(and thereby generate the TOO trigger).
+determine whether to mark the observation as "Prepared" (and thereby generate
+the TOO trigger) or keep it "On Hold".
 
 The exposure time parameter, if given, only sets the exposure time in the
 instrument "static component", which is tied to the first sequence step.

@@ -5,6 +5,7 @@ from astropy.coordinates import SkyCoord, AltAz, EarthLocation
 from astropy.time import Time
 import astropy.units as u
 
+
 def parangle(ra, dec, utdate, uttime, site, verbose=False):
     """
     Compute the parallactic angle of a position at a given date-time.
@@ -54,17 +55,3 @@ def parangle(ra, dec, utdate, uttime, site, verbose=False):
                                   np.cos(coord.dec) * np.tan(location.lat) - np.sin(coord.dec) * np.cos(ha))
 
     return parang
-
-if __name__ == "__main__":
-
-    target = 'TNO12345 url'      # new target name
-    ra = '12:22:22.860'          # RA (J2000)
-    dec = ' 4:31:03.23'           # Dec (J2000)
-    smags = '22.4/r/AB'
-    utdate = '2018-03-15'
-    uttime = '05:35:00' # parang = 0, el=55
-    # uttime = '03:24:00'   # parang = -140, el = 43.2
-    pa = 310.
-
-    parang = parangle(ra,dec,utdate,uttime,'Gemini South',verbose=True)
-    print('parang = ', parang)

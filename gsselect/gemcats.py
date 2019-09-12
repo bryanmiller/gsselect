@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os
 import subprocess
 from astropy.coordinates import SkyCoord
 import astropy.units as u
+
 
 def gemdssfile(ra, dec, outfile, xsiz, ysiz, site='cpo'):
     """Runs a search of the Gemini DSS server and downloads a FITS image of the field
@@ -35,8 +35,7 @@ def gemdssfile(ra, dec, outfile, xsiz, ysiz, site='cpo'):
         url += '&x=' + l_xsiz + '&y=' + l_ysiz
 
         p = subprocess.Popen(["curl", "-k", "-s", "-o", l_outfile, url],
-                     stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = p.communicate()
         if err.decode() != '':
             print(err.decode())
@@ -81,7 +80,6 @@ def gemgstable(ra, dec, outfile, cat='ucac4', radius=0.12, site='gs'):
 
         p = subprocess.Popen(["curl", "-k", "-s", "-o", l_outfile, url],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
         out, err = p.communicate()
         if err.decode() != '':
             print(err.decode())
@@ -92,17 +90,3 @@ def gemgstable(ra, dec, outfile, cat='ucac4', radius=0.12, site='gs'):
         status = 1
 
     return status
-
-if __name__ == "__main__":
-
-    sra = '01:50:16.430'
-    sdec = '00:57:01.90'
-    xsiz = 15.
-    ysiz = 15.
-    home = os.environ['PWD']
-
-    res1 = gemdssfile(sra, sdec, home + '/test/cpodss_test.fits', xsiz, ysiz, site='cpo')
-    print(res1)
-
-    res2 = gemgstable(sra, sdec, home + '/test/cpoucac4_test.vot', cat='ucac4', radius=0.1, site='cpo')
-    print(res2)

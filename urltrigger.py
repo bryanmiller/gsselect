@@ -5,6 +5,7 @@
 # Bryan Miller
 # 2018-01-30 created
 # 2019-02-13 added exptime parameter
+# 2019-09-12 improve code style
 
 from __future__ import print_function
 import requests
@@ -43,7 +44,7 @@ if __name__ == "__main__":
     # server = 'https://gnodbtest.hi.gemini.edu:8443'
 
     # Observation selection
-    obsid=1                                 # obsid of On-hold observation to copy
+    obsid = 1                               # obsid of On-Hold observation to copy
 
     # Target parameters
     obsnum = str(obsid).strip()             # obsid to clone, string
@@ -53,21 +54,21 @@ if __name__ == "__main__":
     smags = '22.4/r/AB'                     # Target brightness
     l_pa = 180.
     l_pamode = 'parallactic'                # Options: fixed, flip, find, parallactic
-    l_exptime = 0                           # exposure time [seconds], if 0 then the value in the template observation is used
+    l_exptime = 0                           # exposure time [seconds], if 0 then use the value in the template
     # l_wDate = ''
-    l_wDate='2018-03-15'                    # UTC date YYYY-MM-DD for timing window
-    l_wTime='01:00'                         # UTC time HH:MM for timing window
-    l_wDur=48                               # Timing window duration, integer hours
+    l_wDate = '2018-03-15'                  # UTC date YYYY-MM-DD for timing window
+    l_wTime = '01:00'                       # UTC time HH:MM for timing window
+    l_wDur = 48                             # Timing window duration, integer hours
     l_obsdate = l_wDate                     # UT date for parallactic angle calculation
     # l_obsime = '05:35:00'                 # UT time for parallactic angle calculation, gives parang = 0, el=55
     l_obstime = '03:24:00'                  # UT time for parallactic angle calculation, gives parang = -140, el = 43.2
-    l_site = 'Gemini South'                # Site, 'Gemini South' or 'Gemini North'
-    l_eltype='airmass'                      # Elevation constraint, "none", "hourAngle", or "airmass"
-    l_elmin=1.0                             # minimum value for hourAngle/airmass
-    l_elmax=1.6                             #  maximum value for hourAngle/airmas
+    l_site = 'Gemini South'                 # Site, 'Gemini South' or 'Gemini North'
+    l_eltype = 'airmass'                    # Elevation constraint, "none", "hourAngle", or "airmass"
+    l_elmin = 1.0                           # minimum value for hourAngle/airmass
+    l_elmax = 1.6                           # maximum value for hourAngle/airmas
 
-    note = 'This is a test note. URL triggered.' + eol + 'Add URL to finder chart here.' # Text for note, optional
-    group = 'New LIGO event'                      # optional, created if does not exist, case-sensitive match
+    note = 'This is a test note. URL triggered.' + eol + 'Add URL to finder chart here.'  # Text for note, optional
+    group = 'New LIGO event'                # optional, created if does not exist, case-sensitive match
 
     # Guidestar parameters
     # If gstarget is missing but other gs* parameters are present, then it defaults to "GS".
@@ -75,19 +76,19 @@ if __name__ == "__main__":
     # gsra='12:22:30.212'                   # Guide star RA (J2000)
     # gsdec='04:29:35.59'                   # Guide star Dec (J2000)
     # gsmag = 11.83                         # Guide star mag
-    gstarg=''                               # Guide star target
+    gstarg = ''                             # Guide star target
     gsra = ''                               # Guide star RA (J2000)
-    gsdec=''                                # Guide star Dec (J2000)
+    gsdec = ''                              # Guide star Dec (J2000)
     gsmag = 0.0                             # Guide star mag
-    gsprobe='OIWFS'                         # Guide star probe (PWFS1/PWFS2/OIWFS/AOWFS)
-    #gsprobe='PWFS2'                        # Guide star probe (PWFS1/PWFS2/OIWFS/AOWFS)
-    l_inst='GMOS'                           # Instrument: 'GMOS', 'F2', 'GNIRS','NIFS','NIRIF/6','NIRIF/14','NIRIF/32'
-    l_port='side'                           # ISS port, options: 'side', 'up', use 'side' for GMOS/F2
+    gsprobe = 'OIWFS'                       # Guide star probe (PWFS1/PWFS2/OIWFS/AOWFS)
+    # gsprobe = 'PWFS2'                       # Guide star probe (PWFS1/PWFS2/OIWFS/AOWFS)
+    l_inst = 'GMOS'                         # Instrument: 'GMOS', 'F2', 'GNIRS','NIFS','NIRIF/6','NIRIF/14','NIRIF/32'
+    l_port = 'side'                         # ISS port, options: 'side', 'up', use 'side' for GMOS/F2
     l_ifu = 'none'                          # IFU option: 'none', 'two', 'red', 'blue'
     l_overw = False                         # Overwrite image/catalog table, if False, will read existing files
     l_display = True                        # Display image of field and selected guide star
     l_chop = False                          # Chopping (no longer used, should be False)
-    l_pad = 5.                              # Padding applied to WFS FoV (to account for uncertainties in shape) [arcsec]
+    l_pad = 5.                              # Padding applied to WFS FoV (accounts for uncertainties in shape) [arcsec]
     l_rmin = -1.                            # Minimum radius for guide star search [arcmin], -1 to use default
     # Conditions
     l_iq = 'Any'                            # Image quality constraint ['20','70','85','Any']
@@ -102,13 +103,13 @@ if __name__ == "__main__":
     # Parallactic angle?
     if l_pamode == 'parallactic':
         l_pa = parangle(ra, dec, l_obsdate, l_obstime, l_site).value
-        l_pamode = 'flip' # in case of guide star selection
+        l_pamode = 'flip'                   # in case of guide star selection
 
     # Guide star selection
     gstarg, gsra, gsdec, gsmag, gspa = gsselect(target, ra, dec, pa=l_pa, imdir='./', site=l_site, pad=l_pad,
-            inst=l_inst, ifu=l_ifu, wfs=gsprobe, chopping=l_chop, cat='UCAC4', pamode=l_pamode,
-            iq=l_iq, cc=l_cc, sb=l_sb,
-            overwrite=l_overw, display=l_display, verbose=False)
+                                                inst=l_inst, ifu=l_ifu, wfs=gsprobe, chopping=l_chop, cat='UCAC4',
+                                                pamode=l_pamode, iq=l_iq, cc=l_cc, sb=l_sb, overwrite=l_overw,
+                                                display=l_display, verbose=False)
     print(gstarg, gsra, gsdec, gsmag, gspa)
 
     # form URL command
@@ -166,5 +167,3 @@ if __name__ == "__main__":
         except requests.exceptions.HTTPError as exc:
             print('Request failed: {}'.format(response.content))
             raise exc
-
-

@@ -19,7 +19,8 @@ import aplpy
 
 # local scripts
 from gsselect.inpoly import inpoly
-from gsselect.gemcats import gemdssfile,gemgstable
+from gsselect.gemcats import gemdssfile, gemgstable
+
 
 def rlimits(inst, wfs, site, verbose=False):
 
@@ -40,22 +41,22 @@ def rlimits(inst, wfs, site, verbose=False):
     rmin = 0.0
     rmax = 0.0
 
-    # oimin = {'GMOS-N':0.33, 'GMOS-S':0.33, 'F2':0.33, 'GNIRS':0.2}
-    # oimax = {'GMOS-N':4.8, 'GMOS-S':4.8, 'F2':3.75, 'GNIRS':1.5}
-    oimin = {'GMOS-N':0.33, 'GMOS-S':0.33, 'F2':0.33}
-    oimax = {'GMOS-N':4.8, 'GMOS-S':4.8, 'F2':3.75}
+    # oimin = {'GMOS-N': 0.33, 'GMOS-S': 0.33, 'F2':0.33, 'GNIRS': 0.2}
+    # oimax = {'GMOS-N': 4.8, 'GMOS-S': 4.8, 'F2':3.75, 'GNIRS': 1.5}
+    oimin = {'GMOS-N': 0.33, 'GMOS-S': 0.33, 'F2': 0.33}
+    oimax = {'GMOS-N': 4.8, 'GMOS-S': 4.8, 'F2': 3.75}
 
-    p2min = {'GMOS-N':5.3, 'GMOS-S':5.3, 'F2':5.3, 'GNIRS':4.8, 'NIFS':4.0, 
-             'NIRIF/6':5.2, 'NIRIF/14':4.8, 'NIRIF/32':4.3}
-    p1min = {'GMOS-N':5.8, 'GMOS-S':5.8, 'F2':5.8, 'GNIRS':5.0, 'NIFS':4.8, 
-             'NIRIF/6':5.7, 'NIRIF/14':5.3, 'NIRIF/32':4.8}
+    p2min = {'GMOS-N': 5.3, 'GMOS-S': 5.3, 'F2': 5.3, 'GNIRS': 4.8, 'NIFS': 4.0,
+             'NIRIF/6': 5.2, 'NIRIF/14': 4.8, 'NIRIF/32': 4.3}
+    p1min = {'GMOS-N': 5.8, 'GMOS-S': 5.8, 'F2': 5.8, 'GNIRS': 5.0, 'NIFS': 4.8,
+             'NIRIF/6': 5.7, 'NIRIF/14': 5.3, 'NIRIF/32': 4.8}
     pmax = 6.9
 
     if wfs == 'OIWFS':
         try:
             rmin = oimin[inst]
             rmax = oimax[inst]
-        except:
+        except Exception:
             if verbose:
                 print('Only GMOS-N, GMOS-S, and F2 have supported OIs.')
     elif wfs == 'PWFS2':
@@ -67,17 +68,18 @@ def rlimits(inst, wfs, site, verbose=False):
 
     return rmin, rmax
 
+
 def maglimits(inst, wfs, site, iq, cc, sb, verbose=False):
     """
     Magnitude correction for conditions
 
     Parameters
-        inst:       Instrument ['GMOS','F2']
+        inst:       Instrument ['GMOS', 'F2']
         wfs:        Wavefront sensor ['OIWFS', 'PWFS1', 'PWFS2']
-        site:       Gemini site ['N','S','mko','cpo']
-        iq:         Image quality constraint ['20','70','85','Any']
+        site:       Gemini site ['N', 'S', 'mko', 'cpo']
+        iq:         Image quality constraint ['20', '70', '85', 'Any']
         cc:         Cloud cover constraint [0.0, -0.3, -1.0, -3.0]
-        sb:         Sky brightness constraint ['20','50','80','Any']
+        sb:         Sky brightness constraint ['20', '50', '80', 'Any']
         verbose     Verbose output?
 
     Return
@@ -89,23 +91,23 @@ def maglimits(inst, wfs, site, iq, cc, sb, verbose=False):
     magfaint = 9999.
 
     # limiting magnitudes are r-band except GNIRS OI (K-band)
-    # oifaint = {'GMOS-N':16.95, 'GMOS-S':15.65, 'F2':16.15, 'GNIRS':0.0}
-    # oibright = {'GMOS-N':6.0, 'GMOS-S':6.0, 'F2':6.0, 'GNIRS':14.0}
-    oifaint = {'GMOS-N':16.95, 'GMOS-S':15.65, 'F2':16.15}
-    oibright = {'GMOS-N':6.0, 'GMOS-S':6.0, 'F2':6.0}
+    # oifaint = {'GMOS-N': 16.95, 'GMOS-S': 15.65, 'F2': 16.15, 'GNIRS': 0.0}
+    # oibright = {'GMOS-N': 6.0, 'GMOS-S': 6.0, 'F2': 6.0, 'GNIRS': 14.0}
+    oifaint = {'GMOS-N': 16.95, 'GMOS-S': 15.65, 'F2': 16.15}
+    oibright = {'GMOS-N': 6.0, 'GMOS-S': 6.0, 'F2': 6.0}
 
-    p1faint = {'N':15.65, 'S':14.15}
-    p1bright = {'N':7.0, 'S':7.0}
+    p1faint = {'N': 15.65, 'S': 14.15}
+    p1bright = {'N': 7.0, 'S': 7.0}
 
-    p2faint = {'N':15.65, 'S':15.65}
-    p2bright = {'N':7.0, 'S':7.0}
+    p2faint = {'N': 15.65, 'S': 15.65}
+    p2bright = {'N': 7.0, 'S': 7.0}
 
     # Magnitude corrections for conditions
     dmag = 0.0
     dmcc = [0.0, -0.3, -1.0, -3.0]
     try:
-        ii = ['50','70','80','Any'].index(cc)
-    except:
+        ii = ['50', '70', '80', 'Any'].index(cc)
+    except Exception:
         if verbose:
             print("cc must be one of '50','70','80','Any'")
         return magbright, magfaint
@@ -113,8 +115,8 @@ def maglimits(inst, wfs, site, iq, cc, sb, verbose=False):
 
     dmiq = [0.25, 0.0, -0.25, -1.25]
     try:
-        ii = ['20','70','85','Any'].index(iq)
-    except:
+        ii = ['20', '70', '85', 'Any'].index(iq)
+    except Exception:
         if verbose:
             print("iq must be one of '20','70','85','Any'")
         return magbright, magfaint
@@ -122,8 +124,8 @@ def maglimits(inst, wfs, site, iq, cc, sb, verbose=False):
 
     dmsb = [0.1, 0.0, -0.1, -0.2]
     try:
-        ii = ['20','50','80','Any'].index(sb)
-    except:
+        ii = ['20', '50', '80', 'Any'].index(sb)
+    except Exception:
         if verbose:
             print("sb must be one of '20','50','80','Any'")
         return magbright, magfaint
@@ -135,7 +137,7 @@ def maglimits(inst, wfs, site, iq, cc, sb, verbose=False):
         try:
             magbright = oibright[inst] + dmag
             magfaint = oifaint[inst] + dmag
-        except:
+        except Exception:
             if verbose:
                 print('Only GMOS-N, GMOS-S, and F2 have supported OIs.')
     elif wfs == 'PWFS1':
@@ -146,6 +148,7 @@ def maglimits(inst, wfs, site, iq, cc, sb, verbose=False):
         magfaint = p2faint[site] + dmag
 
     return magbright, magfaint
+
 
 def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
     """
@@ -158,13 +161,13 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
         verbose: Verbose output
     Returns
         xc, yc  Coordinates of vertices [arcmin]
-    """  
+    """
     # From f2oifov.pro
     # 2018oct27
-    
+
     try:
-        ii = ['side','up'].index(port.lower())
-    except:
+        ii = ['side', 'up'].index(port.lower())
+    except Exception:
         print('PORT must be "side" or "up".')
         return
 
@@ -192,7 +195,7 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
 
     # angle of intersection, use law of cosines
     aisect = np.arccos((x2**2 + r1**2 - r2**2)/(2.*x2*r1))
-    aisect2= np.arcsin(r1*np.sin(aisect)/r2)
+    aisect2 = np.arcsin(r1*np.sin(aisect)/r2)
     if (verbose):
         print(aisect*degrad, aisect2*degrad)
 
@@ -220,24 +223,24 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
     yc = np.append(yc, yc[0])
 
     if (verbose):
-        [print(xc[jj],yc[jj]) for jj in range(len(xc))]
+        [print(xc[jj], yc[jj]) for jj in range(len(xc))]
 
     if (verbose):
-        plt.plot(xc2,yc2)
-        plt.xlim = (-5,11)
-        plt.ylim = (-6,6)
-        plt.plot(xc1,yc1)
-        plt.plot(xc,yc,linewidth=4,linestyle='--')
+        plt.plot(xc2, yc2)
+        plt.xlim = (-5, 11)
+        plt.ylim = (-6, 6)
+        plt.plot(xc1, yc1)
+        plt.plot(xc, yc, linewidth=4, linestyle='--')
         plt.show()
 
-    #output
+    # output
     if (port == 'side'):
-      xc = -xc # make lozenge west of base
-    
+        xc = -xc  # make lozenge west of base
+
     return xc, yc
 
-def gspick(xgs,ygs,xfov,yfov,mag,mmin,mmax,r,rmin,rweight):
 
+def gspick(xgs, ygs, xfov, yfov, mag, mmin, mmax, r, rmin, rweight):
     """
     Function for selecting guide star within WFS FOV
     Bryan Miller
@@ -266,7 +269,7 @@ def gspick(xgs,ygs,xfov,yfov,mag,mmin,mmax,r,rmin,rweight):
     nv = len(xfov)
     if (xfov[0] == xfov[-1]) and (yfov[0] == yfov[-1]):
         nv -= 1
-    ib = inpoly(xfov[:nv],yfov[:nv],xgs,ygs)
+    ib = inpoly(xfov[:nv], yfov[:nv], xgs, ygs)
     iin = np.where(ib)[0]
 
     if (True in ib):
@@ -278,6 +281,7 @@ def gspick(xgs,ygs,xfov,yfov,mag,mmin,mmax,r,rmin,rweight):
             iout = iin[ir[0]]
 
     return iout
+
 
 def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
              site='N', pamode='flip', cat='UCAC4', chopping=False,
@@ -339,7 +343,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
     l_pamode = pamode.lower()
     try:
         ii = ['fixed', 'flip', 'find'].index(l_pamode)
-    except:
+    except Exception:
         if verbose:
             print("PA modes are: 'fixed', 'flip', 'find'")
         return gstarg, gsra, gsdec, gsmag, l_pa
@@ -366,39 +370,40 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
     if 'GMOS' in l_inst:
         l_inst = 'GMOS-' + l_site
     try:
-        ii = ['GMOS-S','GMOS-N','F2','GNIRS','NIFS','NIRIF/6', 'NIRIF/14', 'NIRIF/32'].index(l_inst)
-    except:
+        ii = ['GMOS-S', 'GMOS-N', 'F2', 'GNIRS', 'NIFS', 'NIRIF/6', 'NIRIF/14', 'NIRIF/32'].index(l_inst)
+    except Exception:
         if verbose:
-            print("Currently supported instruments are: 'GMOS-S', 'GMOS-N', 'F2', 'GNIRS', 'NIFS', 'NIRIF/6', 'NIRIF/14', 'NIRIF/32'")
+            print("Currently supported instruments are: 'GMOS-S', 'GMOS-N', 'F2', 'GNIRS', 'NIFS', 'NIRIF/6', "
+                  "'NIRIF/14', 'NIRIF/32'")
         return gstarg, gsra, gsdec, gsmag, l_pa
     if verbose:
-        print('Instrument: ',l_inst)
+        print('Instrument: ', l_inst)
 
     # IFU
     try:
-        iifu = ['none','two', 'red', 'blue'].index(ifu.lower())
-    except:
+        iifu = ['none', 'two', 'red', 'blue'].index(ifu.lower())
+    except Exception:
         if verbose:
             print("IFU options: 'none','two', 'red', 'blue'")
         return gstarg, gsra, gsdec, gsmag, l_pa
-
 
     # WFS
     l_wfs = wfs.upper()
     try:
         ii = ['OIWFS', 'PWFS1', 'PWFS2'].index(l_wfs)
-    except:
+    except Exception:
         if verbose:
             print("Supported WFS are: 'OIWFS','PWFS1','PWFS2'")
         return gstarg, gsra, gsdec, gsmag, l_pa
+
     if verbose:
         print('WFS: ', l_wfs)
 
-    l_target = re.sub(' ','',target)
+    l_target = re.sub(' ', '', target)
 
-    tcoo = SkyCoord(ra.strip(),dec.strip(),frame='icrs',unit = (u.hr, u.deg))
-    l_ra = tcoo.ra.to_string(u.hour,sep=':')
-    l_dec = tcoo.dec.to_string(u.deg,sep=':')
+    tcoo = SkyCoord(ra.strip(), dec.strip(), frame='icrs', unit=(u.hr, u.deg))
+    l_ra = tcoo.ra.to_string(u.hour, sep=':')
+    l_dec = tcoo.dec.to_string(u.deg, sep=':')
     if '-' not in l_dec and l_dec[0] != '+':
         l_dec = '+' + l_dec
 
@@ -408,18 +413,18 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
     #         degstep = 10.
     #     elif inst == 'F2':
     #         degstep = 90.
-    
+
     # Magnitude corrections for conditions
     mmin, mmax = maglimits(l_inst, l_wfs, l_site, iq, cc, sb, verbose=verbose)
     if verbose:
-        print('Mag min/max: ',mmin, mmax)
+        print('Mag min/max: ', mmin, mmax)
     if mmin == 9999. or mmax == 9999.:
         if verbose:
             print('Problem with magnitude limits.')
         return gstarg, gsra, gsdec, gsmag, l_pa
 
     # Radius limits
-    tmp_rmin, l_rmax = rlimits(l_inst,l_wfs,l_site,verbose=verbose)
+    tmp_rmin, l_rmax = rlimits(l_inst, l_wfs, l_site, verbose=verbose)
     if tmp_rmin == 0.0 or l_rmax == 0.0:
         if verbose:
             print('Problem with radius limits.')
@@ -437,12 +442,12 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
     if overwrite or not os.path.exists(imfile):
         if os.path.exists(imfile):
             os.remove(imfile)
-        gemdssfile(l_ra,l_dec,imfile,15.,15.,site=l_site)
+        gemdssfile(l_ra, l_dec, imfile, 15., 15., site=l_site)
 
     hdu = pyfits.open(imfile)
     h = hdu[0].header
-    cdelt = [h['CD1_1'],h['CD2_2']]
-    rot = np.arctan2(-1.*h['CD2_1'],h['CD2_2']) * degrad
+    cdelt = [h['CD1_1'], h['CD2_2']]
+    rot = np.arctan2(-1.*h['CD2_1'], h['CD2_2']) * degrad
     # print(cdelt)
     # print(rot)
 
@@ -468,8 +473,8 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
             # l_rmax = np.sqrt((3.31 - pad / 60.) ** 2 + (3.64 - pad / 60.) ** 2)
         elif (l_inst == 'F2'):
             # F2
-            x, y = f2oifov (port = port, verbose=False)
-            xpad, ypad = f2oifov (pad = pad, port = port)
+            x, y = f2oifov(port=port, verbose=False)
+            xpad, ypad = f2oifov(pad=pad, port=port)
             dpa = 90.
             # l_rmax = l_rmax - pad / 60.
 
@@ -497,12 +502,12 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         ang = np.array(range(101)) * 2. * np.pi / 100.
 
         #  inner radius
-        xpr = l_rmin.to(u.degree).data * np.cos(ang)/np.cos(tcoo.dec)  + tcoo.ra.degree
-        ypr = l_rmin.to(u.degree).data * np.sin(ang)  + tcoo.dec.degree
+        xpr = l_rmin.to(u.degree).data * np.cos(ang)/np.cos(tcoo.dec) + tcoo.ra.degree
+        ypr = l_rmin.to(u.degree).data * np.sin(ang) + tcoo.dec.degree
         # plots, xpr / naxis1, ypr / naxis2, / norm, line = 2
         # outer radius
-        xppr = l_rmax.to(u.degree).data * np.cos(ang)/np.cos(tcoo.dec)  + tcoo.ra.degree
-        yppr = l_rmax.to(u.degree).data * np.sin(ang)  + tcoo.dec.degree
+        xppr = l_rmax.to(u.degree).data * np.cos(ang)/np.cos(tcoo.dec) + tcoo.ra.degree
+        yppr = l_rmax.to(u.degree).data * np.sin(ang) + tcoo.dec.degree
 
     # Query catalog
     if cat == 'UCAC4':
@@ -513,7 +518,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
             gsres = gemgstable(l_ra, l_dec, gsfile, cat='ucac4', radius=0.12, site='cpo')
         gsq = parse_single_table(gsfile).to_table(use_names_over_ids=True)
         id = gsq['ucac4']
-        gscoo = SkyCoord(gsq['raj2000'],gsq['dej2000'],frame='icrs',unit = (u.deg, u.deg))
+        gscoo = SkyCoord(gsq['raj2000'], gsq['dej2000'], frame='icrs', unit=(u.deg, u.deg))
         if l_inst == 'GNIRS' and l_wfs == 'OIWFS':
             mag = gsq['kmag']
         else:
@@ -530,27 +535,26 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
     # Distance from center of field
     rsep = tcoo.separation(gscoo)
     if verbose:
-        print('Rsep:',rsep.arcmin.min(),rsep.arcmin.max())
+        print('Rsep:', rsep.arcmin.min(), rsep.arcmin.max())
 
     # PA
     gspa = tcoo.position_angle(gscoo)
     if verbose:
-        print('PA min/max: ',gspa.degree.min(), gspa.degree.max())
+        print('PA min/max: ', gspa.degree.min(), gspa.degree.max())
 
-
-    ir = np.where(np.logical_and(np.logical_and(np.logical_and(mag > mmin, mag <= mmax),rsep.arcmin > l_rmin.data),
+    ir = np.where(np.logical_and(np.logical_and(np.logical_and(mag > mmin, mag <= mmax), rsep.arcmin > l_rmin.data),
                                  rsep.arcmin <= l_rmax.data))[0]
     ngs = len(ir)
     if verbose:
         print('Number of guide star candidates: ', ngs)
 
     # Pick guide star
-    iis = gspick(gscoo.ra.degree,gscoo.dec.degree,xppr,yppr,mag,mmin,mmax,rsep.degree,
-                 l_rmin.to(u.degree),l_rweight)
+    iis = gspick(gscoo.ra.degree, gscoo.dec.degree, xppr, yppr, mag, mmin, mmax, rsep.degree,
+                 l_rmin.to(u.degree), l_rweight)
 
     # If OIWFS, perhaps adjust PA
     if (l_wfs == 'OIWFS'):
-        if (iis != -1) and l_pamode=='find':
+        if (iis != -1) and l_pamode == 'find':
             # This puts the guide star near the center of the FoV
             l_pa = gspa[iis].degree + dpa
         elif (l_pamode != 'fixed'):
@@ -568,8 +572,8 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
             l_xppr = l_xppr/np.cos(tcoo.dec) + tcoo.ra.degree
             l_yppr += tcoo.dec.degree
 
-            l_iis = gspick(gscoo.ra.degree,gscoo.dec.degree,l_xppr,l_yppr,mag,mmin,mmax,rsep.degree,
-                 l_rmin.to(u.degree),l_rweight)
+            l_iis = gspick(gscoo.ra.degree, gscoo.dec.degree, l_xppr, l_yppr, mag, mmin, mmax, rsep.degree,
+                           l_rmin.to(u.degree), l_rweight)
 
             if (l_iis != -1):
                 if mag[l_iis] < l_mag:
@@ -591,8 +595,8 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
             print('No guide star in FoV.')
     else:
         gstarg = str(id[iis].decode('UTF-8'))
-        gsra = gscoo.ra[iis].to_string(u.hour,sep=':')
-        gsdec = gscoo.dec[iis].to_string(u.degree,sep=':')
+        gsra = gscoo.ra[iis].to_string(u.hour, sep=':')
+        gsdec = gscoo.dec[iis].to_string(u.degree, sep=':')
         gsmag = mag[iis]
 
     # Plot
@@ -606,84 +610,34 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         fig.show_grayscale(invert=True)
         fig.add_grid()
         fig.grid.set_color('white')
-        fig.show_markers(tcoo.ra,tcoo.dec,edgecolor='orange',marker='P',s=60)
+        fig.show_markers(tcoo.ra, tcoo.dec, edgecolor='orange', marker='P', s=60)
         if ngs > 0:
-            fig.show_markers(gscoo.ra[ir],gscoo[ir].dec,edgecolor='green',marker='o',s=60)
+            fig.show_markers(gscoo.ra[ir], gscoo[ir].dec, edgecolor='green', marker='o', s=60)
         if iis != -1:
-            fig.show_markers(gscoo.ra[iis],gscoo.dec[iis],edgecolor='blue',marker='s',s=80)
+            fig.show_markers(gscoo.ra[iis], gscoo.dec[iis], edgecolor='blue', marker='s', s=80)
         # WFS FOV
-        wfspoly_p = np.zeros((len(xpr),2))
+        wfspoly_p = np.zeros((len(xpr), 2))
         for ii in range(len(xpr)):
-            wfspoly_p[ii,0] = xpr[ii]
-            wfspoly_p[ii,1] = ypr[ii]
-        wfspoly_pp = np.zeros((len(xppr),2))
+            wfspoly_p[ii, 0] = xpr[ii]
+            wfspoly_p[ii, 1] = ypr[ii]
+        wfspoly_pp = np.zeros((len(xppr), 2))
         for ii in range(len(xppr)):
             wfspoly_pp[ii, 0] = xppr[ii]
             wfspoly_pp[ii, 1] = yppr[ii]
-        lstyle = {'OIWFS':{'p':'-', 'pp':'--'},
-                  'PWFS2':{'p':'--', 'pp':'-'},
-                  'PWFS1':{'p':'--', 'pp':'-'}}
-        fig.show_polygons([wfspoly_p], edgecolor='red',linestyle=lstyle[l_wfs]['p'])
-        fig.show_polygons([wfspoly_pp], edgecolor='red',linestyle=lstyle[l_wfs]['pp'])
+        lstyle = {'OIWFS': {'p': '-', 'pp': '--'},
+                  'PWFS2': {'p': '--', 'pp': '-'},
+                  'PWFS1': {'p': '--', 'pp': '-'}}
+        fig.show_polygons([wfspoly_p], edgecolor='red', linestyle=lstyle[l_wfs]['p'])
+        fig.show_polygons([wfspoly_pp], edgecolor='red', linestyle=lstyle[l_wfs]['pp'])
         if figout:
             if figfile.lower() == 'default':
                 l_figfile = imdir + '/' + l_target + '_fov.png'
             else:
                 l_figfile = imdir + '/' + figfile
-            # plt.savefig(l_figfile,dpi=dpi)
-            fig.save(l_figfile,dpi=dpi)
+            fig.save(l_figfile, dpi=dpi)
         if display:
             plt.show()
         fig.close()
     hdu.close()
 
     return gstarg, gsra, gsdec, gsmag, l_pa
-
-
-# if __name__ == "__main__":
-# 
-#     target = 'TNO12345 url'      # new target name
-#     ra = '12:22:22.860'          # RA (J2000)
-#     dec = ' 4:31:03.23'           # Dec (J2000)
-#     smags = '22.4/r/AB'
-#     utdate = '2018-03-15'
-#     # uttime = '05:35:00' # parang = 0, el=55
-#     uttime = '03:24:00'   # parang = -140, el = 43.2
-#     pa = 310.
-# 
-#     # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
-#     #          inst='GMOS', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
-#     #          display=True, figout=True, dpi=75, verbose=True)
-#     # print(gstar, gsra, gsdec, gsmag, gspa)
-#     #
-#     # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
-#     #          inst='GNIRS', wfs='PWFS2', overwrite=False,
-#     #         pamode='flip', display=True, verbose=True, figout=True, figfile='gsselect.pdf')
-#     # print(gstar, gsra, gsdec, gsmag, gspa)
-#     #
-#     # gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='north', pad=5.,
-#     #          inst='NIRIf/6', wfs='PWFS2', overwrite=False,
-#     #         pamode='flip', display=True, verbose=True)
-#     # print(gstar, gsra, gsdec, gsmag, gspa)
-# 
-#     target = 'NGC4833'      # new target name
-#     ra = '12:59:33.919'          # RA (J2000)
-#     dec = '-70:52:35.4'           # Dec (J2000)
-#     smags = '22.4/r/AB'
-#     pa = 300.
-# 
-#     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
-#              inst='GMOS', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
-#              display=True, figout=False, dpi=75, verbose=True)
-#     print(gstar, gsra, gsdec, gsmag, gspa)
-# 
-# 
-#     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
-#              inst='F2', ifu='none', wfs='PWFS2', pamode='flip', overwrite=False,
-#              display=True, figout=False, dpi=75, verbose=True)
-#     print(gstar, gsra, gsdec, gsmag, gspa)
-# 
-#     gstar, gsra, gsdec, gsmag, gspa = gsselect(target,ra,dec,pa,imdir='test/', site='south', pad=5.,
-#              inst='F2', ifu='none', wfs='OIWFS', pamode='flip', overwrite=False,
-#              display=True, figout=False, dpi=75, verbose=True)
-#     print(gstar, gsra, gsdec, gsmag, gspa)
