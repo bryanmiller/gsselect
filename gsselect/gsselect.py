@@ -28,9 +28,9 @@ def rlimits(inst, wfs, site, verbose=False):
     Radius limits for guide star searches
 
     Parameters
-        inst:       Instrument ['GMOS','F2']
+        inst:       Instrument ['GMOS-S','F2']
         wfs:        Wavefront sensor ['OIWFS', 'PWFS1', 'PWFS2']
-        site:       Gemini site ['N','S','mko','cpo']
+        site:       Gemini site ['N','S','mko','cpo'], not currently used, for backwards compatibility
         verbose     Verbose output?
 
     Return
@@ -175,7 +175,7 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
     degrad = 180./np.pi
 
     # telescope plate scale arcmin/mm
-    if (mcao):
+    if mcao:
         aminmm = 0.987/60.
     else:
         aminmm = 1.611444/60.
@@ -196,7 +196,7 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
     # angle of intersection, use law of cosines
     aisect = np.arccos((x2**2 + r1**2 - r2**2)/(2.*x2*r1))
     aisect2 = np.arcsin(r1*np.sin(aisect)/r2)
-    if (verbose):
+    if verbose:
         print(aisect*degrad, aisect2*degrad)
 
     # angle of intersection with linear cut
@@ -222,10 +222,10 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
     xc = np.append(xc, xc[0])
     yc = np.append(yc, yc[0])
 
-    if (verbose):
+    if verbose:
         [print(xc[jj], yc[jj]) for jj in range(len(xc))]
 
-    if (verbose):
+    if verbose:
         plt.plot(xc2, yc2)
         plt.xlim = (-5, 11)
         plt.ylim = (-6, 6)
@@ -234,7 +234,7 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
         plt.show()
 
     # output
-    if (port == 'side'):
+    if port == 'side':
         xc = -xc  # make lozenge west of base
 
     return xc, yc
@@ -267,17 +267,17 @@ def gspick(xgs, ygs, xfov, yfov, mag, mmin, mmax, r, rmin, rweight):
 
     # pick objects in FOV
     nv = len(xfov)
-    if (xfov[0] == xfov[-1]) and (yfov[0] == yfov[-1]):
+    if xfov[0] == xfov[-1] and yfov[0] == yfov[-1]:
         nv -= 1
     ib = inpoly(xfov[:nv], yfov[:nv], xgs, ygs)
     iin = np.where(ib)[0]
 
-    if (True in ib):
+    if True in ib:
         ir = np.where(np.logical_and(r[iin] > rmin.data, np.logical_and(mag[iin] > mmin, mag[iin] <= mmax)))[0]
-        if (len(ir) > 1):
+        if len(ir) > 1:
             im = np.where(wmag[iin[ir]] == min(wmag[iin[ir]]))[0]
             iout = iin[ir[im]][0]
-        elif (len(ir) == 1):
+        elif len(ir) == 1:
             iout = iin[ir[0]]
 
     return iout
@@ -456,7 +456,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         # too close to the edge.
         # convert to arcmin
         l_pad = pad / 60.
-        if ('GMOS' in l_inst):
+        if 'GMOS' in l_inst:
             # Offsets for GMOS IFU base position
             if iifu > 0:
                 xshift = [[0.5, 0.529, 0.471], [-0.5, -0.471, -0.529]]
@@ -471,7 +471,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
             ypad = [-0.56 + l_pad, -0.56 + l_pad, 3.64 - l_pad, 3.64 - l_pad, -0.56 + l_pad]
             dpa = 180. * np.arctan((3.31 - dx)/3.64) / np.pi
             # l_rmax = np.sqrt((3.31 - pad / 60.) ** 2 + (3.64 - pad / 60.) ** 2)
-        elif (l_inst == 'F2'):
+        elif l_inst == 'F2':
             # F2
             x, y = f2oifov(port=port, verbose=False)
             xpad, ypad = f2oifov(pad=pad, port=port)
@@ -526,7 +526,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
 
     nquery = len(id)
     if nquery < 1:
-        if (verbose):
+        if verbose:
             print('No guide stars returned by query')
         return gstarg, gsra, gsdec, gsmag, l_pa
     if verbose:
@@ -553,17 +553,17 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
                  l_rmin.to(u.degree), l_rweight)
 
     # If OIWFS, perhaps adjust PA
-    if (l_wfs == 'OIWFS'):
-        if (iis != -1) and l_pamode == 'find':
+    if l_wfs == 'OIWFS':
+        if iis != -1 and l_pamode == 'find':
             # This puts the guide star near the center of the FoV
             l_pa = gspa[iis].degree + dpa
-        elif (l_pamode != 'fixed'):
+        elif l_pamode != 'fixed':
             if iis == -1:
                 l_mag = 999.
             else:
                 l_mag = mag[iis]
             # Try pa +- 180
-            if (l_pa > 180.):
+            if l_pa > 180.:
                 l_pa180 = l_pa - 180.
             else:
                 l_pa180 = l_pa + 180.
@@ -575,7 +575,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
             l_iis = gspick(gscoo.ra.degree, gscoo.dec.degree, l_xppr, l_yppr, mag, mmin, mmax, rsep.degree,
                            l_rmin.to(u.degree), l_rweight)
 
-            if (l_iis != -1):
+            if l_iis != -1:
                 if mag[l_iis] < l_mag:
                     iis = l_iis
                     l_pa = l_pa180
