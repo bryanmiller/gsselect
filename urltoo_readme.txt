@@ -29,7 +29,8 @@ target      - name of the target
 ra          - target RA [J2000], format 'HH:MM:SS.SS'
 dec         - target Dec[J2000], format 'DD:MM:SS.SSS'
 mags        - target magnitude information (optional)
-note        - text to include in a "Finding Chart" note (optional)
+noteTitle   - title for the note, "Finding Chart" if not provided (optional)
+note        - text to include in the note (optional)
 posangle    - position angle [degrees E of N], defaults to 0 (optional)
 exptime     - exposure time [seconds], if not given then value in template used (optional)
 group       - name of the group for the new observation (optional)

@@ -67,6 +67,7 @@ if __name__ == "__main__":
     l_elmin = 1.0                           # minimum value for hourAngle/airmass
     l_elmax = 1.6                           # maximum value for hourAngle/airmas
 
+    notetitle = 'My Note'                   # optional, note title 'Finding Chart' if not provided
     note = 'This is a test note. URL triggered.' + eol + 'Add URL to finder chart here.'  # Text for note, optional
     group = 'New LIGO event'                # optional, created if does not exist, case-sensitive match
 
@@ -124,7 +125,8 @@ if __name__ == "__main__":
 
         # Program and target parameters
         cmd = {'prog': progid, 'password': progkey, 'email': email, 'obsnum': obsnum, 'target': target,
-               'ra': ra, 'dec': dec, 'mags': smags, 'note': note, 'posangle': spa, 'ready': ready}
+               'ra': ra, 'dec': dec, 'mags': smags, 'noteTitle':notetitle, 'note': note, 'posangle': spa,
+               'ready': ready}
 
         # Exposure time?
         if round(l_exptime) != 0:
