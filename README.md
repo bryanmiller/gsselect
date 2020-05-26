@@ -22,8 +22,10 @@ useful with the GMOS and F2 OIWFS guide probes if the PA
 is unimportant.
 
 ## Installation
-The scripts require a standard python distribution that includes 
-numpy (at least 1.15.4), matplotlib, astropy, requests, and [aplpy](http://aplpy.github.io). 
+The scripts require a standard Python distribution that includes 
+numpy (at least 1.15.4), matplotlib, astropy, requests, and [APLpy](http://aplpy.github.io). 
+With astropy 4+ and APLpy 2.0.3+ you will need to install at least v0.7 of
+[reproject](https://github.com/astropy/reproject).
 
 Then install the scripts by downloading and unpacking the zip
 file or use git, e.g.
