@@ -24,6 +24,5 @@ setuptools.setup(
         'matplotlib',
         'numpy',
         'aplpy'
-        'reproject>=0.7'
     ]
 )
