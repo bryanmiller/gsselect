@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='gsselect',
-    version='1.1.3',
+    version='1.2.0',
     author="Bryan Miller",
     author_email="millerwbryan@gmail.com",
     description="Gemini guide star selection and URL TOO triggering",
@@ -23,6 +23,6 @@ setuptools.setup(
         'astropy',
         'matplotlib',
         'numpy',
-        'aplpy'
+        're'
     ]
 )

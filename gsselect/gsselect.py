@@ -14,8 +14,8 @@ import astropy.io.fits as pyfits
 from astropy.io.votable import parse_single_table
 from astropy.coordinates import SkyCoord
 from astropy.modeling import rotations
+from astropy.wcs import WCS
 import re
-import aplpy
 
 # local scripts
 from gsselect.inpoly import inpoly
@@ -446,6 +446,7 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
 
     hdu = pyfits.open(imfile)
     h = hdu[0].header
+    wcs = WCS(h)
     cdelt = [h['CD1_1'], h['CD2_2']]
     rot = np.arctan2(-1.*h['CD2_1'], h['CD2_2']) * degrad
     # print(cdelt)
@@ -603,41 +604,42 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
     if display or figout:
         if not display:
             pltuse('Agg')
-        fig = aplpy.FITSFigure(hdu)
-        # fig.axis_labels.set_font(family='serif')
-        # fig.tick_labels.set_font(family='serif')
-        # fig.show_grayscale(vmin=zlim1[name],vmax=zlim2[name],stretch='log',invert=True)
-        fig.show_grayscale(invert=True)
-        fig.add_grid()
-        fig.grid.set_color('white')
-        fig.show_markers(tcoo.ra, tcoo.dec, edgecolor='orange', marker='P', s=60)
+        fig = plt.figure(figsize=(9,9))
+        plt.subplot(projection=wcs)
+        plt.imshow(hdu[0].data, origin='lower', cmap='gray_r')
+        plt.grid(color='white', ls='solid')
+        # Base position
+        basepx = wcs.wcs_world2pix([tcoo.ra.value], [tcoo.dec.value], 0)
+        plt.scatter(basepx[0], basepx[1], marker='P', color='none', edgecolor='orange', s=60)
+        # Guide stars
         if ngs > 0:
-            fig.show_markers(gscoo.ra[ir], gscoo[ir].dec, edgecolor='green', marker='o', s=60)
+            gsir = wcs.wcs_world2pix(gscoo.ra[ir].value, gscoo[ir].dec.value, 0)
+            plt.scatter(gsir[0], gsir[1], color='none', edgecolor='green', marker='o', s=60)
         if iis != -1:
-            fig.show_markers(gscoo.ra[iis], gscoo.dec[iis], edgecolor='blue', marker='s', s=80)
+            gsiis = wcs.wcs_world2pix(gscoo.ra[iis].value, gscoo[iis].dec.value, 0)
+            plt.scatter(gsiis[0], gsiis[1], color='none', edgecolor='blue', marker='s', s=80)
         # WFS FOV
-        wfspoly_p = np.zeros((len(xpr), 2))
-        for ii in range(len(xpr)):
-            wfspoly_p[ii, 0] = xpr[ii]
-            wfspoly_p[ii, 1] = ypr[ii]
-        wfspoly_pp = np.zeros((len(xppr), 2))
-        for ii in range(len(xppr)):
-            wfspoly_pp[ii, 0] = xppr[ii]
-            wfspoly_pp[ii, 1] = yppr[ii]
         lstyle = {'OIWFS': {'p': '-', 'pp': '--'},
                   'PWFS2': {'p': '--', 'pp': '-'},
                   'PWFS1': {'p': '--', 'pp': '-'}}
-        fig.show_polygons([wfspoly_p], edgecolor='red', linestyle=lstyle[l_wfs]['p'])
-        fig.show_polygons([wfspoly_pp], edgecolor='red', linestyle=lstyle[l_wfs]['pp'])
+        wfspoly_p = wcs.wcs_world2pix(xpr, ypr, 0)
+        wfspoly_pp = wcs.wcs_world2pix(xppr, yppr, 0)
+        plt.plot(wfspoly_p[0], wfspoly_p[1], marker='', color='red', linestyle=lstyle[l_wfs]['p'])
+        plt.plot(wfspoly_pp[0], wfspoly_pp[1], marker='', color='red', linestyle=lstyle[l_wfs]['pp'])
+
+        plt.xlabel('RA')
+        plt.ylabel('Dec')
+
         if figout:
             if figfile.lower() == 'default':
                 l_figfile = imdir + '/' + l_target + '_fov.png'
             else:
                 l_figfile = imdir + '/' + figfile
-            fig.save(l_figfile, dpi=dpi)
+            plt.savefig(l_figfile, dpi=dpi)
+
         if display:
             plt.show()
-        fig.close()
+
     hdu.close()
 
     return gstarg, gsra, gsdec, gsmag, l_pa
