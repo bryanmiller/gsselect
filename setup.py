@@ -24,5 +24,6 @@ setuptools.setup(
         'matplotlib',
         'numpy',
         're'
+        'requests'
     ]
 )
