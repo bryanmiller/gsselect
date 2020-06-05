@@ -37,6 +37,6 @@ pip install gsselect
 ## Authentication
 Authentication for the trigger requires a 'user key' for the 
 Observing Tool that is associated with an email address that
-is included in the active program. See [this page](https://www.gemini.edu/sciops/observing-gemini/phase-ii-and-s/w-tools/observing-tool/science-program-editor/keychain-manage)
+is included in the active program. See [this page](https://www.gemini.edu/observing/phase-ii/ot/ot-description/menu-bar#Keychain)
 for more information on user keys and how to obtain one.
 
