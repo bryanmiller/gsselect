@@ -2,7 +2,7 @@
 This repository provides a python example of using the 
 Gemini Observatory API for triggering template observations
 that are On Hold. Details of the ToO activation process are
-given [here](https://www.gemini.edu/sciops/observing-gemini/phase-ii-and-s/w-tools/too-activation).
+given [here](https://www.gemini.edu/observing/phase-ii/useful-know#ToO).
 The document [urltoo_readme.txt](https://github.com/bryanmiller/gsselect/blob/master/urltoo_readme.txt)
 give more details about the API.
 
