@@ -22,7 +22,7 @@ setuptools.setup(
     install_requires=[
         'astropy',
         'matplotlib',
-        'numpy',
+        'numpy>=1.15.4',
         're'
         'requests'
     ]
