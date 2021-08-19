@@ -164,6 +164,7 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
     """
     # From f2oifov.pro
     # 2018oct27
+    # 2021may07 - 3 circle geometry from Gabriel's sketch
 
     try:
         ii = ['side', 'up'].index(port.lower())
@@ -180,57 +181,85 @@ def f2oifov(pad=0.0, mcao=False, port='side', verbose=False):
     else:
         aminmm = 1.611444/60.
 
-    # first, smaller circle, centered on base position
+    # first, smaller circle, centered on base position (dewar window)
     r1 = 0.5*279.40*aminmm - pad/60.
     x1 = 0.0
     y1 = 0.0
 
-    # second, larger circle, offset
+    # second circle for pickoff arm
     # From original diagram in requirements document
     # r2=0.5*396.25*aminmm - pad/60.
+    # x2 = 170.25*aminmm
     # From Gabriel's figure sketch-gpz294-revB.pdf
+    # Radius of pickoff arm
     r2 = 191.0286*aminmm - pad/60.
-    x2 = 170.25*aminmm
+    # Distance between center of F2 FoV and pickoff pivot
+    x2 = (250.5934 - 77.6653)*aminmm
     y2 = 0.0
 
-    # angle of intersection, use law of cosines
+    # Third circle, with radius of base + pickoff
+    x3 = 250.5934*aminmm
+    y3 = 0.0
+    r3 = 268.6939*aminmm - pad/60.
+
+    # angle of intersection with second circle, use law of cosines
     aisect = np.arccos((x2**2 + r1**2 - r2**2)/(2.*x2*r1))
     aisect2 = np.arcsin(r1*np.sin(aisect)/r2)
     if verbose:
         print(aisect*degrad, aisect2*degrad)
+
+    # angle of intersection with third circle, use law of cosines
+    aisect3 = np.arccos((x3**2 + r1**2 - r3**2)/(2.*x3*r1))
+    aisect3b = np.arcsin(r1*np.sin(aisect)/r3)
+    if verbose:
+        print(aisect3*degrad, aisect3b*degrad)
 
     # angle of intersection with linear cut
     aicut = np.arccos(113.0/139.7)
 
     theta = np.array(range(361)) / degrad
 
-    ii = np.where(np.logical_and((theta <= aisect), (theta >= aicut)))[0]
-    ii2 = np.where(np.logical_and((theta > np.pi - aisect2), (theta < np.pi + aisect2)))[0]
-    ii3 = np.where(np.logical_and((theta >= 2.*np.pi - aisect), (theta <= 2.*np.pi - aicut)))[0]
+    # Chord on Circle 1 between Circle 3 and the vertical cut, +Y
+    ii1 = np.where(np.logical_and((theta <= aisect3), (theta >= aicut)))[0]
+    # Cord on circle 3 (+Y)
+    ii2 = np.where(np.logical_and((theta > np.pi - aisect3b), (theta <= np.pi)))[0]
+    # Chord on circle 2 (-Y)
+    ii3 = np.where(np.logical_and((theta > np.pi), (theta < np.pi + aisect2)))[0]
+    # Chord on Circle 1 (-Y) between Circle 2 and vertical cut
+    ii4 = np.where(np.logical_and((theta >= 2.*np.pi - aisect), (theta <= 2.*np.pi - aicut)))[0]
 
     xc1 = x1 + r1*np.cos(theta)
     yc1 = y1 + r1*np.sin(theta)
     xc2 = x2 + r2*np.cos(theta)
     yc2 = y2 + r2*np.sin(theta)
+    xc3 = x3 + r3*np.cos(theta)
+    yc3 = y3 + r3*np.sin(theta)
 
-    xc = xc1[ii]
-    yc = yc1[ii]
-    xc = np.append(xc, xc2[ii2])
-    yc = np.append(yc, yc2[ii2])
-    xc = np.append(xc, xc1[ii3])
-    yc = np.append(yc, yc1[ii3])
+    xc = xc1[ii1]
+    yc = yc1[ii1]
+
+    xc = np.append(xc, xc3[ii2])
+    yc = np.append(yc, yc3[ii2])
+
+    xc = np.append(xc, xc2[ii3])
+    yc = np.append(yc, yc2[ii3])
+
+    xc = np.append(xc, xc1[ii4])
+    yc = np.append(yc, yc1[ii4])
+
     xc = np.append(xc, xc[0])
     yc = np.append(yc, yc[0])
 
-    if verbose:
-        [print(xc[jj], yc[jj]) for jj in range(len(xc))]
+    # if verbose:
+    #     [print(xc[jj], yc[jj]) for jj in range(len(xc))]
 
     if verbose:
+        plt.plot(xc3, yc3)
         plt.plot(xc2, yc2)
-        plt.xlim = (-5, 11)
-        plt.ylim = (-6, 6)
         plt.plot(xc1, yc1)
         plt.plot(xc, yc, linewidth=4, linestyle='--')
+        plt.xlim = (-5, 11)
+        plt.ylim = (-6, 6)
         plt.show()
 
     # output
@@ -595,7 +624,10 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         if verbose:
             print('No guide star in FoV.')
     else:
-        gstarg = str(id[iis].decode('UTF-8'))
+        if type(id[iis]) is bytes:
+            gstarg = id[iis].decode('UTF-8')
+        else:
+            gstarg = id[iis]
         gsra = gscoo.ra[iis].to_string(u.hour, sep=':')
         gsdec = gscoo.dec[iis].to_string(u.degree, sep=':')
         gsmag = mag[iis]
