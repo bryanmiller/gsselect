@@ -8,14 +8,14 @@ fetch and then store their programs manually to submit a trigger and allows the
 triggering process to be better automated, thus improving the overall
 response time. The Gemini ToO process is described at
 
-https://www.gemini.edu/node/11005
+https://www.gemini.edu/observing/phase-i/too
 
 The team must have have an approved ToO program on Gemini and define ToO template observations,
 complete observations without defined targets, during the Phase 2 process. Authentication
 is done via a "User key" tied to an email address. See the following page for help on getting
 a user key and the password needed for the trigger request.
 
-https://www.gemini.edu/node/12109
+https://www.gemini.edu/observing/phase-ii/ot/ot-description/menu-bar#Keychain
 
 The details of the trigger are formatted as a URL string which can be
 submitted to Gemini using any browser or URL tool such as wget or the 'requests'
