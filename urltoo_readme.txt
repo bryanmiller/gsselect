@@ -1,6 +1,6 @@
 Gemini URL-based Submission of ToO Triggers
 Bryan Miller and Shane Walker
-2019sep12
+2021aug23
 
 Gemini has implemented a web-based service for receiving
 target-of-opportunity (ToO) observation triggers.  This alleviates the need for teams to
