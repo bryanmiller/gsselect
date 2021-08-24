@@ -9,6 +9,8 @@
 
 from __future__ import print_function
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 from gsselect.gsselect import gsselect
 from gsselect.parangle import parangle
 
@@ -108,6 +110,7 @@ if __name__ == "__main__":
                                                 inst=l_inst, ifu=l_ifu, wfs=gsprobe, chopping=l_chop, cat='UCAC4',
                                                 pamode=l_pamode, iq=l_iq, cc=l_cc, sb=l_sb, overwrite=l_overw,
                                                 display=l_display, verbose=False)
+    print('Guide star')
     print(gstarg, gsra, gsdec, gsmag, gspa)
 
     # form URL command
