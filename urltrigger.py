@@ -17,12 +17,9 @@ if __name__ == "__main__":
     # Require a guide star to submit?
     gsreq = True
 
-    # If wait==True, then keep the new observation at On Hold (no trigger)
-    wait = True
-    if wait:
-        ready = 'false'
-    else:
-        ready = 'true'
+    # Trigger or wait?
+    ready = 'false'                         # keep the new observation at On Hold (no trigger)
+    # ready = 'true'                        # set new observation to Prepared/Ready (trigger)
 
     # character string for line break
     # eol = '%0a'
@@ -162,7 +159,7 @@ if __name__ == "__main__":
         try:
             response.raise_for_status()
             newobsid = response.text
-            if wait:
+            if ready == 'false':
                 print(newobsid + ' created and set On Hold')
             else:
                 print(newobsid + ' triggered!')
