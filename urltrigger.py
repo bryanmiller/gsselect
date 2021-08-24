@@ -61,7 +61,13 @@ if __name__ == "__main__":
     l_obsdate = l_wDate                     # UT date for parallactic angle calculation
     # l_obsime = '05:35:00'                 # UT time for parallactic angle calculation, gives parang = 0, el=55
     l_obstime = '03:24:00'                  # UT time for parallactic angle calculation, gives parang = -140, el = 43.2
-    l_site = 'Gemini South'                 # Site, 'Gemini South' or 'Gemini North'
+    if 'GS' in progid:
+        l_site = 'gemini_south'
+    elif 'GN' in progid:
+        l_site = 'gemini_north'             # Site, 'gemini_south' or 'gemini_north'
+    else:
+        print('The program id must have a GS or GN')
+        exit()
     l_eltype = 'airmass'                    # Elevation constraint, "none", "hourAngle", or "airmass"
     l_elmin = 1.0                           # minimum value for hourAngle/airmass
     l_elmax = 1.6                           # maximum value for hourAngle/airmas
