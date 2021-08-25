@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='gsselect',
-    version='1.3.0',
+    version='1.3.1',
     author="Bryan Miller",
     author_email="millerwbryan@gmail.com",
     description="Gemini guide star selection and URL target-of-opportunity (TOO) triggering",

@@ -382,14 +382,14 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
     # long = [-155.46905, -70.736694]
     # elev = [4213., 2722.]
 
-    if 'n' in site.lower() or "mko" in site.lower():
-        l_site = 'N'
-        isite = 0
-        # utcoffset = 10.0 * u.hour
-    elif 's' in site.lower() or "cpo" in site.lower():
+    if 's' in site.lower() or "cpo" in site.lower():
         l_site = 'S'
         isite = 1
         # utcoffset = -4.0 * u.hour + dst * u.hour
+    elif 'n' in site.lower() or "mko" in site.lower():
+        l_site = 'N'
+        isite = 0
+        # utcoffset = 10.0 * u.hour
     else:
         print('Site must be "cpo" or "mko" or include a "S" or "N".')
         return
