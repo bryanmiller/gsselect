@@ -22,9 +22,9 @@ def gemdssfile(ra, dec, outfile, xsiz, ysiz, site='cpo'):
     l_xsiz = str(xsiz)
     l_ysiz = str(ysiz)
     l_site = str(site).lower()
-    if 'n' or 'mko' in l_site:
+    if 'n' in l_site or 'mko' in l_site:
         l_site = 'mko'
-    if 's' or 'cpo' in l_site:
+    if 's' in l_site or 'cpo' in l_site:
         l_site = 'cpo'
 
     status = 0
@@ -66,9 +66,9 @@ def gemgstable(ra, dec, outfile, cat='ucac4', radius=0.12, site='gs'):
     l_cat = str(cat)
     l_sr = str(radius)
     l_site = str(site).lower()
-    if 'n' or "mko" in l_site:
+    if 'n' in l_site or "mko" in l_site:
         l_site = 'gn'
-    if 's' or "cpo" in l_site:
+    if 's' in l_site or "cpo" in l_site:
         l_site = 'gs'
     status = 0
 

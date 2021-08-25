@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # Use these URLs for GN
     # server = 'https://gnodb.gemini.edu:8443'
     # test server
-    # server = 'https://gnodbtest.hi.gemini.edu:8443'
+    # server = 'https://gnodbtest.gemini.edu:8443'
 
     # Observation selection
     obsid = 1                               # obsid of On-Hold observation to copy

@@ -545,14 +545,16 @@ def gsselect(target, ra, dec, pa=0.0, wfs='OIWFS', ifu='none',
         if overwrite or not os.path.exists(gsfile):
             if os.path.exists(gsfile):
                 os.remove(gsfile)
-            gsres = gemgstable(l_ra, l_dec, gsfile, cat='ucac4', radius=0.12, site='cpo')
-        gsq = parse_single_table(gsfile).to_table(use_names_over_ids=True)
-        id = gsq['ucac4']
-        gscoo = SkyCoord(gsq['raj2000'], gsq['dej2000'], frame='icrs', unit=(u.deg, u.deg))
-        if l_inst == 'GNIRS' and l_wfs == 'OIWFS':
-            mag = gsq['kmag']
-        else:
-            mag = gsq['fmag']
+            gsres = gemgstable(l_ra, l_dec, gsfile, cat='ucac4', radius=0.12, site='mko')
+        id = []
+        if os.path.exists(gsfile):
+            gsq = parse_single_table(gsfile).to_table(use_names_over_ids=True)
+            id = gsq['ucac4']
+            gscoo = SkyCoord(gsq['raj2000'], gsq['dej2000'], frame='icrs', unit=(u.deg, u.deg))
+            if l_inst == 'GNIRS' and l_wfs == 'OIWFS':
+                mag = gsq['kmag']
+            else:
+                mag = gsq['fmag']
 
     nquery = len(id)
     if nquery < 1:
